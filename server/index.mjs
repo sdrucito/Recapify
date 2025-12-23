@@ -1,9 +1,37 @@
 // imports
 import express from 'express';
+import morgan from 'morgan';
+import {getAllPublicRecaps, getRecap} from "./dao/recapDAO.mjs";
 
 // init express
 const app = new express();
 const port = 3001;
+
+// middleware
+app.use(express.json());
+app.use(morgan('dev'));
+
+/* ROUTES */
+// GET /api/recaps
+app.get('/api/recaps', (req, res) => {
+  getAllPublicRecaps()
+      .then(recaps => res.json(recaps))
+      .catch(() => res.status(500).end());
+});
+// GET /api/recaps/<id>
+app.get('/api/recaps/:id', async (request, response) => {
+  try {
+    const recap = await getRecap(request.params.id);
+    if(recap.error) {
+      response.status(404).json(recap);
+    } else {
+      response.json(recap);
+    }
+  }
+  catch {
+    response.status(500).end();
+  }
+});
 
 // activate the server
 app.listen(port, () => {
