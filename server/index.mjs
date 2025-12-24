@@ -1,6 +1,6 @@
-// imports
 import express from 'express';
 import morgan from 'morgan';
+import cors from 'cors';
 import {getAllPublicRecaps, getRecap} from "./dao/recapDAO.mjs";
 
 // init express
@@ -10,6 +10,14 @@ const port = 3001;
 // middleware
 app.use(express.json());
 app.use(morgan('dev'));
+
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  optionsSuccessState: 200,
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 
 /* ROUTES */
 // GET /api/recaps
