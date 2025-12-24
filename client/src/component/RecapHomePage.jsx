@@ -1,20 +1,29 @@
 import {Button, Container} from "react-bootstrap";
 import RecapPreviews from "./RecapPreviews.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import dayjs from "dayjs";
+import API from "../API.mjs";
 
 function RecapHomePage(){
+    const [recapPreviews, setRecapPreviews] = useState([]);
     const [sortMode, setSortMode] = useState("none");
+    useEffect(() => {
+        const getRecapPreviews = async () => {
+            const recapPreviews = await API.getAllPublicRecapPreviews();
+            setRecapPreviews(recapPreviews);
+        }
+        getRecapPreviews();
+    }, []);
     const toggleSort = () =>{
         setSortMode(sortMode=== "desc" ? "asc": "desc");
     }
-    const fakeRecaps = [
+    /*const fakeRecaps = [
         {id: 1, title: "Il mio anno in videogiochi", theme: "Videogiochi", createdAt: "2024-12-31"},
         {id: 2, title: "Tra dadi e draghi", theme: "Giochi di ruolo", createdAt: "2024-12-28"},
         {id: 3, title: "Boss fight memorabili", theme: "Videogiochi", createdAt: "2024-12-29"}
-    ];
+    ];*/
 
-    let sortedRecaps = [...fakeRecaps];
+    let sortedRecaps = [...recapPreviews];
 
 
     switch(sortMode){
@@ -35,7 +44,7 @@ function RecapHomePage(){
                     <i className={sortMode ==="asc" ? "bi bi-sort-up" : "bi bi-sort-down"}></i>
                 </Button>
             </div>
-            <RecapPreviews recaps={sortedRecaps}/>
+            <RecapPreviews recapPreviews={sortedRecaps}/>
         </Container>
     );
 }
