@@ -1,11 +1,11 @@
 import { ListGroup} from "react-bootstrap";
 import {Link} from "react-router";
 
-function RecapPreviews({recaps}) {
+function RecapPreviews(props) {
     return (
         <>
             <ListGroup>
-                {recaps.map((r, index) => (
+                {props.recaps.map((r, index) => (
                     <ListGroup.Item
                         key={r.id}
                         action
