@@ -11,7 +11,7 @@ export const getAllPublicRecaps = () => {
     return new Promise((resolve, reject) => {
         const sql = `SELECT r.id, r.title, r.theme_id, t.name, u.id AS authorId, u.username AS authorUsername,
                             r.derived_from_recap_id, r.created_at
-                            FROM recap r JOIN themes t ON t.id = r.theme_id LEFT JOIN users u ON u.id = r.author_id
+                            FROM recaps r JOIN themes t ON t.id = r.theme_id LEFT JOIN users u ON u.id = r.author_id
                             WHERE r.is_template = 0 AND r.visibility = 'public'`;
 
         db.all(sql, [], (err, rows) => {
@@ -42,7 +42,7 @@ export const getRecap = (recapId) => {
         // recap
         const recapSql = `SELECT r.id, r.title, r.theme_id, t.name, r.author_id, u.username, r.visibility,
                                 r.derived_from_recap_id, r.created_at, r.is_template
-                                FROM recap r JOIN themes t ON t.id = r.theme_id LEFT JOIN users u ON u.id = r.author_id
+                                FROM recaps r JOIN themes t ON t.id = r.theme_id LEFT JOIN users u ON u.id = r.author_id
                                 WHERE r.id = ?`;
         db.get(recapSql, [recapId], (err, recapRow) => {
             if (err) reject(err);
