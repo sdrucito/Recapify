@@ -6,6 +6,7 @@ import './App.css'
 import {Route, Routes} from "react-router";
 import DefaultLayout from "./component/DefaultLayout.jsx";
 import RecapHomePage from "./component/RecapHomePage.jsx";
+import RecapViewer from "./component/RecapViewer.jsx";
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
       <Routes>
           <Route element={<DefaultLayout/>}>
               <Route path="/" element={<RecapHomePage/>}/>
+              <Route path="/recaps/:id" element={<RecapViewer/>}/>
           </Route>
       </Routes>
   );

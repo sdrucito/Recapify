@@ -19,6 +19,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+/* STATIC */
+app.use('/images', express.static('images')); //TODO soluzione temporanea, sarebbe da creare un'apposita api
+
 /* ROUTES */
 // GET /api/recaps
 app.get('/api/recaps', (req, res) => {
