@@ -1,0 +1,40 @@
+# This suite is for all the REST call from a PUBLIC user
+# get all recaps | return 200(OK)
+GET http://localhost:3001/api/recaps
+###
+# get a public recap | return 200(OK)
+GET http://localhost:3001/api/recaps/1
+###
+# get a private recap | return 403 (Forbidden)
+GET http://localhost:3001/api/recaps/2
+###
+# get a wrong recap | return 404(OK)
+GET http://localhost:3001/api/recaps/99
+###
+# Login with unregistered user | return 401(Unauthorized)
+POST http://localhost:3001/api/sessions
+content-type: application/json
+
+{
+  "username": "unregistered@gmail.com",
+  "password": "password123"
+}
+###
+# Login with wrong password | return 401(Unauthorized)
+POST http://localhost:3001/api/sessions
+content-type: application/json
+
+{
+  "username": "playerone@gmail.com",
+  "password": "password123456"
+}
+###
+## Checking if user is still logged-in | return 401(Unauthorized)
+GET http://localhost:3001/api/sessions/current
+
+###
+
+## Logout | return 200(OK)
+DELETE http://localhost:3001/api/sessions/current
+
+###

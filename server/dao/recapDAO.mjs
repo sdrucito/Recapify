@@ -45,8 +45,8 @@ export const getRecap = (recapId) => {
                                 FROM recaps r JOIN themes t ON t.id = r.theme_id LEFT JOIN users u ON u.id = r.author_id
                                 WHERE r.id = ?`;
         db.get(recapSql, [recapId], (err, recapRow) => {
-            if (err) reject(err);
-            if (!recapRow) resolve(null);
+            if (err) return reject(err);
+            if (!recapRow) return resolve(null);
 
             const recap = new Recap(
                 recapRow.id,

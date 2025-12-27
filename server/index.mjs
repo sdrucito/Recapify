@@ -68,11 +68,20 @@ app.get('/api/recaps', (req, res) => {
 app.get('/api/recaps/:id', async (request, response) => {
   try {
     const recap = await getRecap(request.params.id);
-    if(recap.error) {
-      response.status(404).json(recap);
-    } else {
-      response.json(recap);
+    if(recap === null)
+      return response.status(404).json(recap); //TODO: check if is ok json null
+
+    if (recap.visibility === 'public')
+      return response.json(recap);
+
+    console.log(recap);
+    console.log(request.isAuthenticated());
+    console.log(request.user.id === recap.authorId);
+
+    if (request.isAuthenticated() && request.user.id === recap.authorId) {
+      return response.json(recap);
     }
+    return response.status(403).json({ error: 'Not authorized' });
   }
   catch {
     response.status(500).end();
