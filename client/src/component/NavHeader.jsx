@@ -23,6 +23,7 @@ function NavHeader(props){
                     <Button  className="ms-auto bg-gradient" onClick={()=>setDarkMode(oldMode=>!oldMode)}>
                         {darkMode ? <i className="bi bi-sun-fill"/>:<i className="bi bi-moon-stars-fill"/>}
                     </Button>
+                    {props.loggedIn && <Link to="/myrecaps" className="btn bg-gradient">My Recaps</Link>}
                     {props.loggedIn ? (
                         <>
                             <LogoutButton handleLogout={props.handleLogout} />
