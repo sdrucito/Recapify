@@ -19,7 +19,9 @@ GET http://localhost:3001/api/recaps/2
 ###
 # get a wrong recap | return 404(OK)
 GET http://localhost:3001/api/recaps/99
-
+###
+# get a list of recaps, public and private | return 200(OK)
+GET http://localhost:3001/api/recaps/myrecaps
 ###
 ## Checking if user is still logged-in | return 200(OK)
 GET http://localhost:3001/api/sessions/current

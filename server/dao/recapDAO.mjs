@@ -7,6 +7,7 @@ const db = new sqlite.Database('./database.sqlite', (err) => {
 });
 
 // get all public recaps (for homepage)
+// NOTE: it doesn't return pages, must be used only for recap's previews.
 export const getAllPublicRecaps = () => {
     return new Promise((resolve, reject) => {
         const sql = `SELECT r.id, r.title, r.theme_id, t.name, u.id AS authorId, u.username AS authorUsername,
@@ -25,6 +26,37 @@ export const getAllPublicRecaps = () => {
                     r.authorId,
                     r.authorUsername,
                     'public',
+                    r.derived_from_recap_id, //TODO da controllare in futuro
+                    r.created_at,
+                    false,
+                    []
+                ));
+                resolve(Recaps);
+            }
+        });
+    });
+}
+
+// get all recaps for a single user (for personal area)
+// NOTE: it doesn't return pages, must be used only for recap's previews.
+export const getAllRecapsByUserId = (userId) => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT r.id, r.title, r.theme_id, t.name, u.id AS authorId, u.username AS authorUsername,
+                            r.derived_from_recap_id, r.created_at
+                            FROM recaps r JOIN themes t ON t.id = r.theme_id LEFT JOIN users u ON u.id = r.author_id
+                            WHERE r.is_template = 0 AND r.author_id = ?`;
+
+        db.all(sql, [userId], (err, rows) => {
+            if (err) reject(err);
+            else {
+                const Recaps = rows.map(r => new Recap(
+                    r.id,
+                    r.title,
+                    r.theme_id,
+                    r.name,
+                    r.authorId,
+                    r.authorUsername,
+                    r.visibility,
                     r.derived_from_recap_id, //TODO da controllare in futuro
                     r.created_at,
                     false,

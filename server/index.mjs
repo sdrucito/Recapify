@@ -4,7 +4,7 @@ import cors from 'cors';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import session from 'express-session';
-import {getAllPublicRecaps, getRecap} from "./dao/recapDAO.mjs";
+import {getAllPublicRecaps, getAllRecapsByUserId, getRecap} from "./dao/recapDAO.mjs";
 import {getUser} from "./dao/userDAO.mjs";
 
 // init express
@@ -64,6 +64,17 @@ app.get('/api/recaps', (req, res) => {
       .then(recaps => res.json(recaps))
       .catch(() => res.status(500).end());
 });
+// GET /api/recaps/myrecaps
+app.get('/api/recaps/myrecaps', isLoggedIn, async (req, res) => {
+  try {
+    const recaps = await getAllRecapsByUserId(req.user.id);
+    return res.json(recaps);
+  } catch (err) {
+    console.error(err);
+    res.status(500).end();
+  }
+});
+
 // GET /api/recaps/<id>
 app.get('/api/recaps/:id', async (request, response) => {
   try {
@@ -73,10 +84,6 @@ app.get('/api/recaps/:id', async (request, response) => {
 
     if (recap.visibility === 'public')
       return response.json(recap);
-
-    console.log(recap);
-    console.log(request.isAuthenticated());
-    console.log(request.user.id === recap.authorId);
 
     if (request.isAuthenticated() && request.user.id === recap.authorId) {
       return response.json(recap);
