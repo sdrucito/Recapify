@@ -35,5 +35,45 @@ const getRecap = async (id) => {
         throw new Error("Failed to fetch recap");
     }
 };
-const API = {getAllPublicRecapPreviews, getRecap};
+
+/* AUTHENTICATION */
+const login = async(credentials)=>{
+    const response = await fetch(SERVER_URL+"/api/sessions",{
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        credentials: "include",
+        body: JSON.stringify(credentials)
+    });
+    if (response.ok) {
+        const user=await response.json();
+        return user;
+    }else{
+        const errDetails = await response.text();
+        throw errDetails;
+    }
+}
+
+const getUserInfo = async () => {
+    const response = await fetch(`${SERVER_URL}/api/sessions/current`, {
+        credentials: "include",
+    });
+    const user = await response.json();
+    if(response.ok) {
+        return user;
+    }else{
+        throw user; //TODO da controllare questo errore
+    }
+}
+
+const logout = async()=>{
+    const response = await fetch(`${SERVER_URL}/api/sessions/current`, {
+        method: "DELETE",
+        credentials: "include"
+    });
+    if(response.ok) {
+        return null;
+    }
+}
+
+const API = {getAllPublicRecapPreviews, getRecap, login, getUserInfo, logout};
 export default API;
