@@ -52,6 +52,29 @@ const getRecap = async (id) => {
     }
 };
 
+// PATCH /api/recaps/:id/visibility
+const updateRecapVisibility = async (recapId, visibility) => {
+    const response = await fetch(
+        `${SERVER_URL}/api/recaps/${recapId}/visibility`,
+        {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ visibility: visibility })
+        }
+    );
+
+    if (response.ok)
+        return true;
+    if (response.status === 401) {
+        throw new Error("Not authenticated");
+    }
+    if (response.status === 403) {
+        throw new Error("Not authorized");
+    }
+    throw new Error("Failed to update visibility");
+};
+
 /* AUTHENTICATION */
 const login = async(credentials)=>{
     const response = await fetch(SERVER_URL+"/api/sessions",{
@@ -91,5 +114,5 @@ const logout = async()=>{
     }
 }
 
-const API = {getAllPublicRecapPreviews, getMyRecapPreviews, getRecap, login, getUserInfo, logout};
+const API = {getAllPublicRecapPreviews, getMyRecapPreviews, getRecap, updateRecapVisibility, login, getUserInfo, logout};
 export default API;

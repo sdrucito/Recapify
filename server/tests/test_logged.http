@@ -23,12 +23,23 @@ GET http://localhost:3001/api/recaps/99
 # get a list of recaps, public and private | return 200(OK)
 GET http://localhost:3001/api/recaps/myrecaps
 ###
-## Checking if user is still logged-in | return 200(OK)
-GET http://localhost:3001/api/sessions/current
 
+# set visibility of a recap to public | return 200(OK)
+PATCH localhost:3001/api/recaps/2/visibility
+content-type: application/json
+
+{"visibility": "public"}
+###
+# set visibility of a recap to private | return 200(OK)
+PATCH localhost:3001/api/recaps/2/visibility
+content-type: application/json
+
+{"visibility": "private"}
 ###
 
-## Logout | return 200(OK)
+# Checking if user is still logged-in | return 200(OK)
+GET http://localhost:3001/api/sessions/current
+###
+# Logout | return 200(OK)
 DELETE http://localhost:3001/api/sessions/current
-
 ###

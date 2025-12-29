@@ -4,7 +4,7 @@ import cors from 'cors';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import session from 'express-session';
-import {getAllPublicRecaps, getAllRecapsByUserId, getRecap} from "./dao/recapDAO.mjs";
+import {getAllPublicRecaps, getAllRecapsByUserId, getRecap, updateRecapVisibility} from "./dao/recapDAO.mjs";
 import {getUser} from "./dao/userDAO.mjs";
 
 // init express
@@ -64,6 +64,7 @@ app.get('/api/recaps', (req, res) => {
       .then(recaps => res.json(recaps))
       .catch(() => res.status(500).end());
 });
+
 // GET /api/recaps/myrecaps
 app.get('/api/recaps/myrecaps', isLoggedIn, async (req, res) => {
   try {
@@ -92,6 +93,33 @@ app.get('/api/recaps/:id', async (request, response) => {
   }
   catch {
     response.status(500).end();
+  }
+});
+
+// PATCH /api/recaps/:id/visibility
+app.patch('/api/recaps/:id/visibility', isLoggedIn, async (req, res) => {
+  try {
+    const recapId = req.params.id;
+    const { visibility } = req.body;
+
+    // body check
+    if (!visibility || !['public', 'private'].includes(visibility)) {
+      return res.status(400).json({ error: 'Invalid visibility value' });
+    }
+
+    const recap = await getRecap(recapId);
+    if (!recap) {
+      return res.status(404).json({ error: 'Recap not found' });
+    } else if (recap.authorId !== req.user.id) {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+
+    await updateRecapVisibility(recapId, visibility);
+    return res.status(200).json({ success: true });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).end();
   }
 });
 
