@@ -1,15 +1,15 @@
+import {useEffect, useState} from "react";
+import API from "../API.mjs";
+import dayjs from "dayjs";
 import {Button, Container} from "react-bootstrap";
 import RecapPreviews from "./RecapPreviews.jsx";
-import {useEffect, useState} from "react";
-import dayjs from "dayjs";
-import API from "../API.mjs";
 
-function RecapHomePage(){
+function MyRecaps() {
     const [recapPreviews, setRecapPreviews] = useState([]);
     const [sortMode, setSortMode] = useState("none");
     useEffect(() => {
         const getRecapPreviews = async () => {
-            const recapPreviews = await API.getAllPublicRecapPreviews();
+            const recapPreviews = await API.getMyRecapPreviews();
             setRecapPreviews(recapPreviews);
         }
         getRecapPreviews();
@@ -31,15 +31,24 @@ function RecapHomePage(){
     }
     return (
         <Container>
-            <div className="position-relative mb-3">
-                <h4 className="text-center mb-0">Community Recaps</h4>
-                <Button className="position-absolute top-50 end-0 translate-middle-y" variant="primary" onClick={toggleSort}>
-                    <i className={sortMode ==="asc" ? "bi bi-sort-up" : "bi bi-sort-down"}></i>
-                </Button>
+            <div className="d-flex justify-content-end mb-3">
+                <h4 className="position-absolute start-50 translate-middle-x mb-0 d-none d-md-block">
+                    My Recaps
+                </h4>
+                <h4 className="position-absolute start-0 ps-4 mb-0 d-block d-md-none">My Recaps</h4> {/*TODO: da sistemare meglio*/}
+                <div className="d-flex gap-2">
+                    <Button variant="primary">Create new recap</Button>
+                    <Button variant="outline-secondary" onClick={toggleSort}>
+                        <i className={sortMode === "asc" ? "bi bi-sort-up" : "bi bi-sort-down"} />
+                    </Button>
+                </div>
             </div>
+
             <RecapPreviews recapPreviews={sortedRecaps}/>
         </Container>
+
+
     );
 }
 
-export default RecapHomePage;
+export default MyRecaps;

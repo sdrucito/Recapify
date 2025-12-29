@@ -11,6 +11,7 @@ import NotFound from "./component/NotFound.jsx";
 import {useEffect, useState} from "react";
 import API from "./API.mjs";
 import {LoginForm} from "./component/AuthComponents.jsx";
+import MyRecaps from "./component/MyRecaps.jsx";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -54,7 +55,7 @@ function App() {
               <Route path="/" element={<RecapHomePage/>}/>
               <Route path="/recaps/:id" element={<RecapViewer/>}/>
               <Route path="/login" element={loggedIn ? <Navigate replace to='/'/> : <LoginForm handleLogin={handleLogin}/>}/>
-              <Route path="/myrecaps" element={<RecapViewer/>}/>
+              <Route path="/myrecaps" element={<MyRecaps/>}/>
               <Route path="*" element={<NotFound/>}/>
           </Route>
       </Routes>

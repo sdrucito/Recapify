@@ -13,6 +13,22 @@ const getAllPublicRecapPreviews = async () => {
     }
 };
 
+// GET /api/recaps/myrecaps
+const getMyRecapPreviews = async () => {
+    const response = await fetch(`${SERVER_URL}/api/recaps/myrecaps`, {
+        credentials: "include"
+    });
+    if (response.ok) {
+        const recapsJson = await response.json();
+        return recapsJson.map(r =>
+            new RecapPreview(r.id, r.title, r.themeName, r.authorUsername, r.createdAt, r.visibility)
+        );
+    }else if (response.status === 401) {
+        throw new Error("Not authenticated");
+    }else
+        throw new Error("Failed to load user recaps");
+};
+
 // GET /api/recaps/:id
 const getRecap = async (id) => {
     const response = await fetch(`${SERVER_URL}/api/recaps/${id}`);
@@ -75,5 +91,5 @@ const logout = async()=>{
     }
 }
 
-const API = {getAllPublicRecapPreviews, getRecap, login, getUserInfo, logout};
+const API = {getAllPublicRecapPreviews, getMyRecapPreviews, getRecap, login, getUserInfo, logout};
 export default API;
