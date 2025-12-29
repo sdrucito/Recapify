@@ -42,7 +42,7 @@ export const getAllPublicRecaps = () => {
 export const getAllRecapsByUserId = (userId) => {
     return new Promise((resolve, reject) => {
         const sql = `SELECT r.id, r.title, r.theme_id, t.name, u.id AS authorId, u.username AS authorUsername,
-                            r.derived_from_recap_id, r.created_at
+                            r.visibility, r.derived_from_recap_id, r.created_at
                             FROM recaps r JOIN themes t ON t.id = r.theme_id LEFT JOIN users u ON u.id = r.author_id
                             WHERE r.is_template = 0 AND r.author_id = ?`;
 

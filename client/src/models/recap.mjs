@@ -42,12 +42,13 @@ function Recap(id, title, themeId, themeName = null, authorId = null, authorUser
     this.pages = pages;
 }
 
-function RecapPreview(id, title, themeName, authorUsername, createdAt) {
+function RecapPreview(id, title, themeName, authorUsername, createdAt, visibility) {
     this.id = id;
     this.title = title;
     this.themeName = themeName;
     this.authorUsername = authorUsername;
     this.createdAt = dayjs(createdAt);
+    this.visibility = visibility;
 }
 
 export {Theme, Background, RecapText, RecapPage, Recap, RecapPreview};

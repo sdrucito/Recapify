@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import {Button, Container} from "react-bootstrap";
 import RecapPreviews from "./RecapPreviews.jsx";
 
-function MyRecaps() {
+function MyRecaps(props) {
     const [recapPreviews, setRecapPreviews] = useState([]);
     const [sortMode, setSortMode] = useState("none");
     useEffect(() => {
@@ -44,7 +44,7 @@ function MyRecaps() {
                 </div>
             </div>
 
-            <RecapPreviews recapPreviews={sortedRecaps}/>
+            <RecapPreviews recapPreviews={sortedRecaps} loggedIn={props.loggedIn}/>
         </Container>
 
 
