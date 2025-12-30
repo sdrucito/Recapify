@@ -55,7 +55,7 @@ function App() {
               <Route path="/" element={<RecapHomePage/>}/>
               <Route path="/recaps/:id" element={<RecapViewer/>}/>
               <Route path="/login" element={loggedIn ? <Navigate replace to='/'/> : <LoginForm handleLogin={handleLogin}/>}/>
-              <Route path="/myrecaps" element={<MyRecaps loggedIn={loggedIn}/>}/>
+              <Route path="/myrecaps" element={loggedIn ? <MyRecaps loggedIn={loggedIn}/>  : <Navigate replace to='/'/>}/>
               <Route path="*" element={<NotFound/>}/>
           </Route>
       </Routes>

@@ -82,9 +82,11 @@ function MyRecaps(props) {
                     </Button>
                 </div>
             </div>
-
+            {sortedRecaps.length > 0 ?
             <RecapPreviews recapPreviews={sortedRecaps} loggedIn={props.loggedIn}
                            updatingRecapId={updatingRecapId} onUpdateVisibility={openVisibilityModal}/>
+                : <p>You haven't any recap yet.</p>
+            }
             <Modal show={showModal} onHide={closeVisibilityModal} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Change visibility</Modal.Title>
