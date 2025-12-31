@@ -6,6 +6,7 @@ import LocalStrategy from 'passport-local';
 import session from 'express-session';
 import {check, validationResult} from 'express-validator';
 import {
+  addRecap,
   getAllPublicRecaps,
   getAllRecapsByUserId, getAllThemes,
   getBackgroundsByTheme,

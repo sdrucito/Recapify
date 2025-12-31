@@ -51,27 +51,27 @@ Content-Type: application/json
 
 {
   "title": "My 2024 in Games",
-  "theme_id": 1,
-  "visibility": "private",
+  "theme_id": 2,
+  "visibility": "public",
   "derived_from_recap_id": null,
   "pages": [
     {
       "page_index": 0,
-      "background_id": 4,
+      "background_id": 7,
       "texts": [
         { "slot_index": 0, "content": "It all started here" }
       ]
     },
     {
       "page_index": 1,
-      "background_id": 5,
+      "background_id": 8,
       "texts": [
         { "slot_index": 0, "content": "So many hours played" }
       ]
     },
     {
       "page_index": 2,
-      "background_id": 6,
+      "background_id": 9,
       "texts": [
         { "slot_index": 0, "content": "Game over" }
       ]
