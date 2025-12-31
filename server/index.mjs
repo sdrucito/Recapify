@@ -4,7 +4,14 @@ import cors from 'cors';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import session from 'express-session';
-import {getAllPublicRecaps, getAllRecapsByUserId, getRecap, updateRecapVisibility} from "./dao/recapDAO.mjs";
+import {check, validationResult} from 'express-validator';
+import {
+  getAllPublicRecaps,
+  getAllRecapsByUserId, getAllThemes,
+  getBackgroundsByTheme,
+  getRecap, getTemplatesByTheme,
+  updateRecapVisibility
+} from "./dao/recapDAO.mjs";
 import {getUser} from "./dao/userDAO.mjs";
 
 // init express
@@ -54,10 +61,10 @@ app.use(session({
 app.use(passport.authenticate('session'));
 
 
-/* STATIC */
+/**** STATIC ****/
 app.use('/images', express.static('images')); //TODO soluzione temporanea, sarebbe da creare un'apposita api
 
-/* ROUTES */
+/**** ROUTES ****/
 // GET /api/recaps
 app.get('/api/recaps', (req, res) => {
   getAllPublicRecaps()
@@ -123,7 +130,73 @@ app.patch('/api/recaps/:id/visibility', isLoggedIn, async (req, res) => {
   }
 });
 
-/* AUTH ROUTES */
+// POST /api/recaps
+app.post('/api/recaps', isLoggedIn,   [
+  check('title').isString().notEmpty(),
+  check('theme_id').isInt(),
+  check('visibility').isIn(['public', 'private']),
+  check('pages').isArray({ min: 3 }),
+  check('pages.*.background_id').isInt(),
+  check('pages.*.texts').isArray({ min: 1 }),
+  check('pages.*.texts.*.slot_index').isInt({ min: 0, max: 2 }),
+  check('pages.*.texts.*.content').isString()
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()});
+  }
+  const userId = req.user.id;
+  const recap = req.body;
+
+  try {
+    const recapId = await addRecap(recap, userId);
+    res.status(201).json({ id: recapId });
+  } catch {
+    res.status(500).end();
+  }
+});
+
+// GET /api/templates
+app.get('/api/templates', isLoggedIn, async (req, res) => {
+  const themeId = req.query.themeId;
+
+  if (!themeId)
+    return res.status(400).json({ error: 'themeId required' });
+
+  try {
+    const templates = await getTemplatesByTheme(themeId);
+    res.json(templates);
+  } catch {
+    res.status(500).end();
+  }
+});
+
+// GET /api/backgrounds
+app.get('/api/backgrounds', isLoggedIn, async (req, res) => {
+  const themeId = req.query.themeId;
+
+  if (!themeId)
+    return res.status(400).json({ error: 'themeId required' });
+
+  try {
+    const backgrounds = await getBackgroundsByTheme(themeId);
+    res.json(backgrounds);
+  } catch {
+    res.status(500).end();
+  }
+});
+
+// GET /api/themes
+app.get('/api/themes', async (req, res) => {
+  try {
+    const templates = await getAllThemes();
+    res.json(templates);
+  } catch {
+    res.status(500).end();
+  }
+});
+
+/**** AUTH ROUTES ****/
 // POST /api/sessions
 app.post('/api/sessions',passport.authenticate('local'), function(req, res) {
   return res.status(201).json(req.user);

@@ -1,11 +1,13 @@
 import sqlite from 'sqlite3';
 import {Recap, RecapPage, RecapText, Background} from "../models/recap.mjs";
+import dayjs from "dayjs";
 
 const db = new sqlite.Database('./database.sqlite', (err) => {
     if (err) throw err;
     else console.log("Successfully connected to the database");
 });
 
+/**** QUERY FOR VIEWER ****/
 // get all public recaps (for homepage)
 // NOTE: it doesn't return pages, must be used only for recap's previews.
 export const getAllPublicRecaps = () => {
@@ -158,6 +160,113 @@ export const updateRecapVisibility = (recapId, visibility) => {
             } else {
                 resolve(this.changes);
             }
+        });
+    });
+};
+
+/**** QUERY FOR EDITOR ****/
+// create a new Recap in db
+export const addRecap = (recap, userId) => {
+    return new Promise((resolve, reject) => {
+
+        db.serialize(() => {
+            db.run('BEGIN TRANSACTION');
+            const dateNow = dayjs().format('YYYY-MM-DD');
+            const recapSql = `INSERT INTO recaps (title, theme_id, author_id, visibility, 
+                                    derived_from_recap_id, created_at, is_template)
+                                    VALUES (?, ?, ?, ?, ?, ?, 0)`;
+
+            db.run(recapSql, [recap.title, recap.theme_id, userId, recap.visibility,
+                    recap.derived_from_recap_id ?? null, dateNow], function (err) {
+                    if (err) {
+                        db.run('ROLLBACK');
+                        return reject(err);
+                    }
+
+                    const recapId = this.lastID;
+                    const pageSql = `INSERT INTO recap_pages (recap_id, page_index, background_id)
+                                            VALUES (?, ?, ?)`;
+                    const textSql = `INSERT INTO recap_texts (page_id, slot_index, content)
+                                            VALUES (?, ?, ?)`;
+                    let pageCount = recap.pages.length;
+                    let completedPages = 0;
+
+                    recap.pages.forEach(page => {
+                        db.run(pageSql, [recapId, page.page_index, page.background_id], function (err) {
+                                if (err) {
+                                    db.run('ROLLBACK');
+                                    return reject(err);
+                                }
+
+                                const pageId = this.lastID;
+
+                                page.texts.forEach(text => {
+                                    db.run(textSql,[pageId, text.slot_index, text.content],err => {
+                                            if (err) {
+                                                db.run('ROLLBACK');
+                                                return reject(err);
+                                            }
+                                        }
+                                    );
+                                });
+
+                                completedPages++;
+                                if (completedPages === pageCount) {
+                                    db.run('COMMIT');
+                                    resolve(recapId);
+                                }
+                            }
+                        );
+                    });
+                }
+            );
+        });
+    });
+};
+
+
+
+// get all templates by themeId
+export const getTemplatesByTheme = (themeId) => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT r.id,
+                         r.title,
+                         r.theme_id,
+                         t.name AS themeName,
+                         b.image_path AS previewImage
+                     FROM recaps r
+                              JOIN themes t ON t.id = r.theme_id
+                              JOIN recap_pages p ON p.recap_id = r.id AND p.page_index = 0
+                              JOIN backgrounds b ON b.id = p.background_id
+                     WHERE r.is_template = 1
+                       AND r.theme_id = ?
+        `;
+        db.all(sql, [themeId], (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
+        });
+    });
+};
+
+//get all backgrounds by themeId
+export const getBackgroundsByTheme = (themeId) => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT id, theme_id, image_path, slots, layout_json
+                            FROM backgrounds WHERE theme_id = ?`;
+        db.all(sql, [themeId], (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
+        });
+    });
+};
+
+//get all themes
+export const getAllThemes = () => {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT * FROM themes`;
+        db.all(sql, [], (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
         });
     });
 };

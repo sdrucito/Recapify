@@ -36,7 +36,58 @@ content-type: application/json
 
 {"visibility": "private"}
 ###
+# get themes | return 200
+GET http://localhost:3001/api/themes
+###
+# get backgrounds | return 200
+GET http://localhost:3001/api/backgrounds?themeId=2
+###
+# get templates | return 200
+GET http://localhost:3001/api/templates?themeId=2
+###
+# post a recap | return 201
+POST http://localhost:3001/api/recaps
+Content-Type: application/json
 
+{
+  "title": "My 2024 in Games",
+  "theme_id": 1,
+  "visibility": "private",
+  "derived_from_recap_id": null,
+  "pages": [
+    {
+      "page_index": 0,
+      "background_id": 4,
+      "texts": [
+        { "slot_index": 0, "content": "It all started here" }
+      ]
+    },
+    {
+      "page_index": 1,
+      "background_id": 5,
+      "texts": [
+        { "slot_index": 0, "content": "So many hours played" }
+      ]
+    },
+    {
+      "page_index": 2,
+      "background_id": 6,
+      "texts": [
+        { "slot_index": 0, "content": "Game over" }
+      ]
+    }
+  ]
+}
+###
+# post a wrong recap | return 422
+POST http://localhost:3001/api/recaps
+Content-Type: application/json
+
+{
+  "title": "Broken recap",
+  "pages": []
+}
+###
 # Checking if user is still logged-in | return 200(OK)
 GET http://localhost:3001/api/sessions/current
 ###
