@@ -68,10 +68,13 @@ app.use('/images', express.static('images')); //TODO soluzione temporanea, sareb
 /**** ROUTES ****/
 // GET /api/recaps
 app.get('/api/recaps', (req, res) => {
-  getAllPublicRecaps()
+  const themeId = req.query.themeId;
+
+  getAllPublicRecaps(themeId)
       .then(recaps => res.json(recaps))
       .catch(() => res.status(500).end());
 });
+
 
 // GET /api/recaps/myrecaps
 app.get('/api/recaps/myrecaps', isLoggedIn, async (req, res) => {

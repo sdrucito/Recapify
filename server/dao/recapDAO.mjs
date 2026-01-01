@@ -8,16 +8,22 @@ const db = new sqlite.Database('./database.sqlite', (err) => {
 });
 
 /**** QUERY FOR VIEWER ****/
-// get all public recaps (for homepage)
+// get all public recaps (for homepage) or all public recaps by theme
 // NOTE: it doesn't return pages, must be used only for recap's previews.
-export const getAllPublicRecaps = () => {
+export const getAllPublicRecaps = (themeId = null) => {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT r.id, r.title, r.theme_id, t.name, u.id AS authorId, u.username AS authorUsername,
+        let sql = `SELECT r.id, r.title, r.theme_id, t.name, u.id AS authorId, u.username AS authorUsername,
                             r.derived_from_recap_id, r.created_at
                             FROM recaps r JOIN themes t ON t.id = r.theme_id LEFT JOIN users u ON u.id = r.author_id
                             WHERE r.is_template = 0 AND r.visibility = 'public'`;
+        const params = [];
 
-        db.all(sql, [], (err, rows) => {
+        if (themeId) {
+            sql += ' AND r.theme_id = ?';
+            params.push(themeId);
+        }
+
+        db.all(sql, params, (err, rows) => {
             if (err) reject(err);
             else {
                 const Recaps = rows.map(r => new Recap(
