@@ -75,6 +75,84 @@ const updateRecapVisibility = async (recapId, visibility) => {
     throw new Error("Failed to update visibility");
 };
 
+// POST /api/recaps
+const createRecap = async (recap) => {
+    const response = await fetch(`${SERVER_URL}/api/recaps`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(recap)
+    });
+
+    if (response.ok) {
+        return await response.json(); // { id }
+    } else {
+        throw await response.json();
+    }
+};
+
+// GET /api/themes
+const getAllThemes = async () => {
+    const response = await fetch(`${SERVER_URL}/api/themes`, {
+        credentials: 'include'
+    });
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw await response.json();
+    }
+};
+// GET /api/templates?themeId=:themeId
+const getTemplatesByTheme = async (themeId) => {
+    const response = await fetch(
+        `${SERVER_URL}/api/templates?themeId=${themeId}`,
+        { credentials: 'include' }
+    );
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw await response.json();
+    }
+};
+// GET /api/backgrounds?themeId=:themeId
+const getBackgroundsByTheme = async (themeId) => {
+    const response = await fetch(
+        `${SERVER_URL}/api/backgrounds?themeId=${themeId}`,
+        { credentials: 'include' }
+    );
+
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw await response.json();
+    }
+};
+// GET /api/recaps?themeId=:themeId
+const getPublicRecapsByTheme = async (themeId) => {
+    const response = await fetch(
+        `${SERVER_URL}/api/recaps?themeId=${themeId}`
+    );
+
+    if (response.ok) {
+        const recaps = await response.json();
+        return recaps.map(r =>
+            new RecapPreview(
+                r.id,
+                r.title,
+                r.themeName,
+                r.authorUsername,
+                r.createdAt,
+                r.previewImage
+            )
+        );
+    } else {
+        throw new Error('Cannot load recaps');
+    }
+};
+
+
 /* AUTHENTICATION */
 const login = async(credentials)=>{
     const response = await fetch(SERVER_URL+"/api/sessions",{
@@ -114,5 +192,7 @@ const logout = async()=>{
     }
 }
 
-const API = {getAllPublicRecapPreviews, getMyRecapPreviews, getRecap, updateRecapVisibility, login, getUserInfo, logout};
+const API = {getAllPublicRecapPreviews, getMyRecapPreviews, getRecap, updateRecapVisibility,
+    createRecap, getAllThemes, getTemplatesByTheme, getBackgroundsByTheme, getPublicRecapsByTheme,
+    login, getUserInfo, logout};
 export default API;
