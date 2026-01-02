@@ -39,11 +39,14 @@ content-type: application/json
 # get themes | return 200
 GET http://localhost:3001/api/themes
 ###
-# get backgrounds | return 200
+# get backgrounds by themeId | return 200
 GET http://localhost:3001/api/backgrounds?themeId=2
 ###
-# get templates | return 200
+# get templates by themeId | return 200
 GET http://localhost:3001/api/templates?themeId=2
+###
+# get recaps by themeId | return 200
+GET http://localhost:3001/api/recaps?themeId=2
 ###
 # post a recap | return 201
 POST http://localhost:3001/api/recaps
