@@ -36,11 +36,9 @@ function RecapViewer() {
             {!recap && <p>Loading recap...</p>}
             {recap && (
                 <>
-                    {/* Header */}
                     <h2>{recap.title}</h2>
                     <p className="recap-subtle">di {recap.authorUsername} - {recap.createdAt.format("DD MMM YYYY")}</p>
 
-                    {/* Carousel */}
                     <Carousel interval={null}>
                         {pagesWithLayout.map(page => (
                             <Carousel.Item key={page.id}>

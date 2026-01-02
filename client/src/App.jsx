@@ -12,6 +12,8 @@ import {useEffect, useState} from "react";
 import API from "./API.mjs";
 import {LoginForm} from "./component/AuthComponents.jsx";
 import MyRecaps from "./component/MyRecaps.jsx";
+import CreateRecap from "./component/CreateRecap.jsx";
+import RecapEditor from "./component/RecapEditor.jsx";
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -56,6 +58,9 @@ function App() {
               <Route path="/recaps/:id" element={<RecapViewer/>}/>
               <Route path="/login" element={loggedIn ? <Navigate replace to='/'/> : <LoginForm handleLogin={handleLogin}/>}/>
               <Route path="/myrecaps" element={loggedIn ? <MyRecaps loggedIn={loggedIn}/>  : <Navigate replace to='/'/>}/>
+              <Route path="/myrecaps/create" element={loggedIn ? <CreateRecap /> : <Navigate replace to="/" />}/>
+              <Route path="/myrecaps/create/editor" element={loggedIn ? <RecapEditor /> : <Navigate replace to="/" />}
+              />
               <Route path="*" element={<NotFound/>}/>
           </Route>
       </Routes>
