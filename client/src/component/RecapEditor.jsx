@@ -313,7 +313,10 @@ function PagePreview({ page, onUpdateText }) {
                                 background: "rgba(255,255,255,0.85)",
                                 borderRadius: "6px",
                                 border: "1px solid #ccc",
-                                padding: "6px"
+                                padding: "6px",
+                                fontSize: "clamp(1rem, 1.3vw, 1.3rem)",
+                                maxWidth: "35%",
+                                minWidth: "180px"
                             }}
                         />
                     );
