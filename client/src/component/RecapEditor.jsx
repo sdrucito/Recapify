@@ -286,36 +286,39 @@ function PagePreview({ page, onUpdateText }) {
 
     return (
         <div
-            className="flex-fill border rounded me-3 position-relative"
-            style={{
-                height: "70vh",
-                backgroundImage: `url(${SERVER_URL}/images/${page.backgroundImagePath})`,
-                backgroundSize: "contain",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center"
-            }}
+            className="flex-fill border rounded me-3 d-flex justify-content-center align-items-center"
+            style={{ height: "70vh" }}
         >
-            {page.texts.map(t => (
-                <textarea
-                    key={t.slotIndex}
-                    value={t.content}
-                    onChange={e => onUpdateText(t.slotIndex, e.target.value)}
-                    placeholder={`Text ${t.slotIndex + 1}`}
-                    style={{
-                        position: "absolute",
-                        top: `${getSlotPosition(page, t.slotIndex).y}%`,
-                        left: `${getSlotPosition(page, t.slotIndex).x}%`,
-                        transform: "translate(-50%, -50%)",
-                        width: "220px",
-                        resize: "none",
-                        color: "#000",
-                        background: "rgba(255,255,255,0.85)",
-                        borderRadius: "6px",
-                        border: "1px solid #ccc",
-                        padding: "6px"
-                    }}
+            <div style={{ position: "relative" }}>
+                <img src={`${SERVER_URL}/images/${page.backgroundImagePath}`} alt=""
+                    style={{maxHeight: "70vh", maxWidth: "100%", display: "block"}}
                 />
-            ))}
+
+                {page.texts.map(t => {
+                    const pos = getSlotPosition(page, t.slotIndex); // {x,y} in %
+                    return (
+                        <textarea
+                            key={t.slotIndex}
+                            value={t.content}
+                            onChange={e => onUpdateText(t.slotIndex, e.target.value)}
+                            placeholder={`Text ${t.slotIndex + 1}`}
+                            style={{
+                                position: "absolute",
+                                top: `${pos.y}%`,
+                                left: `${pos.x}%`,
+                                transform: "translate(-50%, -50%)",
+                                width: "220px",
+                                resize: "none",
+                                color: "#000",
+                                background: "rgba(255,255,255,0.85)",
+                                borderRadius: "6px",
+                                border: "1px solid #ccc",
+                                padding: "6px"
+                            }}
+                        />
+                    );
+                })}
+            </div>
         </div>
     );
 }
