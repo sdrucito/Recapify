@@ -17,6 +17,7 @@ function RecapEditor() {
     ]);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const [backgrounds, setBackgrounds] = useState([]);
+    const [isDirty, setIsDirty] = useState(false);
 
     // take information from CreateRecap
     useEffect(() => {
@@ -52,12 +53,15 @@ function RecapEditor() {
     }, [source, navigate]);
 
     useEffect(() => {
+        if (!source) return;
         const loadBackgrounds = async () => {
             try {
-                const bgs = await API.getBackgroundsByTheme(1); // TODO: themeId dinamico
+                const bgs = await API.getBackgroundsByTheme(source.theme_id); // TODO: themeId dinamico
                 setBackgrounds(
                     bgs.map(bg => ({
                         id: bg.id,
+                        imagePath: bg.image_path,
+                        layout: bg.layout.slots,
                         previewUrl: `${SERVER_URL}/images/${bg.image_path}`
                     }))
                 );
@@ -66,24 +70,50 @@ function RecapEditor() {
             }
         };
         loadBackgrounds();
-    }, []);
+    }, [source]);
 
     const assignBackground = (bgId) => {
+        const bg = backgrounds.find(b => b.id === bgId);
+        if (!bg) return;
+
         setPages(old =>
-            old.map((p, i) =>
-                i === currentPageIndex ? { ...p, backgroundId: bgId } : p
-            )
+            old.map((p, i) => {
+                if (i !== currentPageIndex) return p;
+
+                const slotCount = bg.layout.length;
+
+                const newTexts = [];
+                for (let s = 0; s < slotCount; s++) {
+                    const existing = p.texts?.find(t => t.slotIndex === s);
+                    newTexts.push(
+                        existing ?? { slotIndex: s, content: "" }
+                    );
+                }
+
+                return {
+                    ...p,
+                    backgroundId: bg.id,
+                    backgroundImagePath: bg.imagePath,
+                    layout: bg.layout,
+                    texts: newTexts
+                };
+            })
         );
+
+        setIsDirty(true);
     };
+
 
     const addPage = () => {
         setPages(p => [...p, { id: Date.now(), backgroundId: null }]);
+        setIsDirty(true);
     };
 
     const removePage = () => {
         if (pages.length <= 3) return;
         setPages(p => p.filter((_, i) => i !== currentPageIndex));
         setCurrentPageIndex(0);
+        setIsDirty(true);
     };
     const movePageUp = () => {
         if (currentPageIndex === 0) return;
@@ -95,6 +125,7 @@ function RecapEditor() {
             return copy;
         });
         setCurrentPageIndex(i => i - 1);
+        setIsDirty(true);
     };
 
     const movePageDown = () => {
@@ -107,12 +138,22 @@ function RecapEditor() {
             return copy;
         });
         setCurrentPageIndex(i => i + 1);
+        setIsDirty(true);
+    };
+    const isValidRecap = () => {
+        if (!title.trim()) return false;
+
+        const hasAtLeastOneText = pages.some(p =>
+            p.texts?.some(t => t.content && t.content.trim() !== "")
+        );
+
+        return hasAtLeastOneText;
     };
     const handleSave = async () => {
         const payload = {
             title,
-            theme_id: source.theme_id,              // dal template/recap
-            visibility: "private",                  // per ora fisso
+            theme_id: source.theme_id,
+            visibility: "private",
             derived_from_recap_id:
                 sourceType === "recap" ? source.id : null,
             pages: pages.map((p, index) => ({
@@ -121,7 +162,10 @@ function RecapEditor() {
                 texts: p.texts.filter(t => t.content.trim() !== "")
             }))
         };
-
+        if (!isValidRecap()) {
+            alert("Please add a title and at least one text per page");
+            return;
+        }
         try {
             const result = await API.createRecap(payload);
             navigate(`/recaps/${result.id}`);
@@ -130,14 +174,24 @@ function RecapEditor() {
             alert("Error while saving recap");
         }
     };
+    const handleBack = () => {
+        if (isDirty) {
+            const ok = window.confirm(
+                "You have unsaved changes. Are you sure you want to leave?"
+            );
+            if (!ok) return;
+        }
+        navigate('/myrecaps/create');
+    };
+
 
     return (
         <Container fluid>
             <EditorHeader
                 title={title}
-                onTitleChange={setTitle}
+                onTitleChange={(v) => { setTitle(v); setIsDirty(true); }}
                 onSave={() => console.log("save", pages)}
-                onBack={() => navigate('/myrecaps/create')}
+                onBack={handleBack}
             />
             {/*onSave={handleSave}*/}
 
@@ -274,7 +328,7 @@ function getSlotPosition(page, slotIndex) {
 
 function BackgroundSidebar(props) {
     return (
-        <div style={{width: "220px"}}>
+        <div style={{width: "220px",maxHeight: "75vh", overflowY: "auto"}}>
             <h6>Backgrounds</h6>
             {props.backgrounds.map(bg => (
                 <div key={bg.id}
