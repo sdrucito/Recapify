@@ -7,7 +7,7 @@ const getAllPublicRecapPreviews = async () => {
     const recaps = await fetch(`${SERVER_URL}/api/recaps`);
     if (recaps.ok) {
         const recapsJson = await recaps.json();
-        return recapsJson.map(r => new RecapPreview(r.id, r.title, r.themeName,r.authorUsername, r.createdAt));
+        return recapsJson.map(r => new RecapPreview(r.id, r.title, r.themeName,r.authorUsername, r.createdAt, r.visibility, r.previewImage));
     }else{
         throw new Error("Internal Server Error");
     }
@@ -21,7 +21,7 @@ const getMyRecapPreviews = async () => {
     if (response.ok) {
         const recapsJson = await response.json();
         return recapsJson.map(r =>
-            new RecapPreview(r.id, r.title, r.themeName, r.authorUsername, r.createdAt, r.visibility)
+            new RecapPreview(r.id, r.title, r.themeName, r.authorUsername, r.createdAt, r.visibility, r.previewImage)
         );
     }else if (response.status === 401) {
         throw new Error("Not authenticated");
@@ -144,6 +144,7 @@ const getPublicRecapsByTheme = async (themeId) => {
                 r.themeName,
                 r.authorUsername,
                 r.createdAt,
+                r.visibility,
                 r.previewImage
             )
         );
