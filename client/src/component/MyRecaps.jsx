@@ -77,8 +77,8 @@ function MyRecaps(props) {
                 </h4>
                 <h4 className="position-absolute start-0 ps-4 mb-0 d-block d-md-none">My Recaps</h4> {/*TODO: da sistemare meglio*/}
                 <div className="d-flex gap-2">
-                    <Link to="/myrecaps/create" className="btn bg-gradient">Create new recap</Link>
-                    <Button className="bg-gradient" onClick={toggleSort}>
+                    <Button as={Link} to="/myrecaps/create" className="btn bg-gradient">Create new recap</Button>
+                    <Button className="btn bg-gradient" onClick={toggleSort}>
                         <i className={sortMode === "asc" ? "bi bi-sort-up" : "bi bi-sort-down"} />
                     </Button>
                 </div>

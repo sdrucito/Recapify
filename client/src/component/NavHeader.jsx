@@ -20,15 +20,15 @@ function NavHeader(props){
             <Navbar bg='primary' data-bs-theme='dark' >
                 <Container fluid>
                     <Link to="/" className="navbar-brand fs-2 fw-bold">Recapify</Link>
-                    <Button  className="ms-auto bg-gradient" onClick={()=>setDarkMode(oldMode=>!oldMode)}>
+                    <Button className="ms-auto btn bg-gradient" onClick={()=>setDarkMode(oldMode=>!oldMode)}>
                         {darkMode ? <i className="bi bi-sun-fill"/>:<i className="bi bi-moon-stars-fill"/>}
                     </Button>
-                    {props.loggedIn && <Link to="/myrecaps" className="btn bg-gradient">My Recaps</Link>}
+                    {props.loggedIn && <Button as={Link} to="/myrecaps" className="btn bg-gradient">My Recaps</Button>}
                     {props.loggedIn ? (
                         <>
                             <LogoutButton handleLogout={props.handleLogout} />
                         </>
-                    ) : (<Link to="/login" className="btn bg-gradient">Login</Link>)
+                    ) : (<Button as={Link} to="/login" className="btn bg-gradient">Login</Button>)
                     }
                 </Container>
             </Navbar>
