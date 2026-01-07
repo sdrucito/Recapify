@@ -73,7 +73,13 @@ function CreateRecap() {
             </Form.Group>
 
             {loading && <Spinner/>}
-
+            {!loading && selectedTheme && items.length === 0 && (
+                <p className="text-muted text-center mt-3">
+                    {sourceType === 'template'
+                        ? "No templates available for this theme."
+                        : "No public recaps available for this theme."}
+                </p>
+            )}
             {!loading && items.length > 0 && (
                 <PreviewPicker items={items} onSelect={handleSelect}/>
             )}
