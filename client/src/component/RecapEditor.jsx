@@ -3,10 +3,12 @@ import {Button, Container} from "react-bootstrap";
 import API from "../API.mjs";
 import {SERVER_URL} from "../config.js";
 import {useLocation, useNavigate} from "react-router";
+import { useUnsavedChanges} from "./UnsavedChangesContext.jsx";
 
 function RecapEditor() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { hasUnsavedChanges, setHasUnsavedChanges } = useUnsavedChanges();
 
     const { sourceType, themeId, source } = location.state || {}; //Note: source contains only recap preview, not full recap.
     const [title, setTitle] = useState("Untitled recap");
@@ -17,7 +19,6 @@ function RecapEditor() {
     ]);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const [backgrounds, setBackgrounds] = useState([]);
-    const [isDirty, setIsDirty] = useState(false);  //to prevent exit with unsaved change
 
     /** take information from CreateRecap **/
     useEffect(() => {
@@ -99,20 +100,29 @@ function RecapEditor() {
             })
         );
 
-        setIsDirty(true);
+        setHasUnsavedChanges(true);
     };
 
+    useEffect(() => {
+        const handler = (e) => {
+            if (!hasUnsavedChanges) return;
+            e.preventDefault();
+            e.returnValue = "";
+        };
+        window.addEventListener("beforeunload", handler);
+        return () => window.removeEventListener("beforeunload", handler);
+    }, [hasUnsavedChanges]);
 
     const addPage = () => {
         setPages(p => [...p, { id: Date.now(), backgroundId: null }]);
-        setIsDirty(true);
+        setHasUnsavedChanges(true);
     };
 
     const removePage = () => {
         if (pages.length <= 3) return;
         setPages(p => p.filter((_, i) => i !== currentPageIndex));
         setCurrentPageIndex(0);
-        setIsDirty(true);
+        setHasUnsavedChanges(true);
     };
     const movePageUp = () => {
         if (currentPageIndex === 0) return;
@@ -124,7 +134,7 @@ function RecapEditor() {
             return copy;
         });
         setCurrentPageIndex(i => i - 1);
-        setIsDirty(true);
+        setHasUnsavedChanges(true);
     };
 
     const movePageDown = () => {
@@ -137,7 +147,7 @@ function RecapEditor() {
             return copy;
         });
         setCurrentPageIndex(i => i + 1);
-        setIsDirty(true);
+        setHasUnsavedChanges(true);
     };
     const isValidRecap = () => {
         if (!title.trim()) return false;
@@ -167,6 +177,7 @@ function RecapEditor() {
         }
         try {
             const result = await API.createRecap(payload);
+            setHasUnsavedChanges(false);
             navigate(`/recaps/${result.id}`);
         } catch (err) {
             console.error(err);
@@ -174,21 +185,14 @@ function RecapEditor() {
         }
     };
     const handleBack = () => {
-        if (isDirty) {
-            const ok = window.confirm(
-                "You have unsaved changes. Are you sure you want to leave?"
-            );
-            if (!ok) return;
-        }
-        navigate('/myrecaps/create');
+        navigate("/myrecaps/create");
     };
-
 
     return (
         <Container fluid>
             <EditorHeader
                 title={title}
-                onTitleChange={(v) => { setTitle(v); setIsDirty(true); }}
+                onTitleChange={(v) => { setTitle(v); setHasUnsavedChanges(true); }}
                 onSave={() => console.log("save", pages)}
                 onBack={handleBack}
             />
@@ -220,7 +224,7 @@ function RecapEditor() {
                                     } : p
                             )
                         );
-                        setIsDirty(true);
+                        setHasUnsavedChanges(true);
                     }}
                 />
 

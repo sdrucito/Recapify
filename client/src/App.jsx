@@ -14,11 +14,14 @@ import {LoginForm} from "./component/AuthComponents.jsx";
 import MyRecaps from "./component/MyRecaps.jsx";
 import CreateRecap from "./component/CreateRecap.jsx";
 import RecapEditor from "./component/RecapEditor.jsx";
+import UnsavedChangesContext from "./component/UnsavedChangesContext.jsx";
+
 
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [message, setMessage] = useState('');
     const [user, setUser] = useState(null);
+    const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -52,18 +55,24 @@ function App() {
         setMessage('');
     };
   return (
-      <Routes>
-          <Route element={<DefaultLayout message={message} setMessage={setMessage} loggedIn={loggedIn}  handleLogout={handleLogout}/>}>
-              <Route path="/" element={<RecapHomePage/>}/>
-              <Route path="/recaps/:id" element={<RecapViewer/>}/>
-              <Route path="/login" element={loggedIn ? <Navigate replace to='/'/> : <LoginForm handleLogin={handleLogin}/>}/>
-              <Route path="/myrecaps" element={loggedIn ? <MyRecaps loggedIn={loggedIn}/>  : <Navigate replace to='/'/>}/>
-              <Route path="/myrecaps/create" element={loggedIn ? <CreateRecap /> : <Navigate replace to="/" />}/>
-              <Route path="/myrecaps/create/editor" element={loggedIn ? <RecapEditor /> : <Navigate replace to="/" />}
-              />
-              <Route path="*" element={<NotFound/>}/>
-          </Route>
-      </Routes>
+      <UnsavedChangesContext.Provider value={{hasUnsavedChanges, setHasUnsavedChanges}}>
+          <Routes>
+              <Route element={<DefaultLayout message={message} setMessage={setMessage} loggedIn={loggedIn}
+                                             handleLogout={handleLogout}/>}>
+                  <Route path="/" element={<RecapHomePage/>}/>
+                  <Route path="/recaps/:id" element={<RecapViewer/>}/>
+                  <Route path="/login"
+                         element={loggedIn ? <Navigate replace to='/'/> : <LoginForm handleLogin={handleLogin}/>}/>
+                  <Route path="/myrecaps"
+                         element={loggedIn ? <MyRecaps loggedIn={loggedIn}/> : <Navigate replace to='/'/>}/>
+                  <Route path="/myrecaps/create" element={loggedIn ? <CreateRecap/> : <Navigate replace to="/"/>}/>
+                  <Route path="/myrecaps/create/editor" element={loggedIn ? <RecapEditor/> : <Navigate replace to="/"/>}
+                  />
+                  <Route path="*" element={<NotFound/>}/>
+              </Route>
+          </Routes>
+      </UnsavedChangesContext.Provider>
+
   );
 }
 

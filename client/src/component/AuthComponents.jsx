@@ -45,7 +45,7 @@ function LoginForm(props) {
 
 function LogoutButton(props){
     return(
-        <Button as={Link} to="/" className="btn bg-gradient" onClick={props.handleLogout}>Logout</Button>
+        <Button className="btn bg-gradient" onClick={props.onLogout}>Logout</Button>
     )
 }
 
