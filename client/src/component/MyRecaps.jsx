@@ -35,7 +35,6 @@ function MyRecaps(props) {
             break;
     }
 
-    //TODO: forse da rifattorizzare
     const updateVisibility = async () => {
         if (!selectedRecap) return;
 
@@ -49,7 +48,6 @@ function MyRecaps(props) {
                         return { ...r, visibility: newVisibility }
                     else
                         return r
-
                 })
             );
         } catch (err) {
@@ -63,7 +61,6 @@ function MyRecaps(props) {
         setSelectedRecap(recap);
         setShowModal(true);
     };
-
     const closeVisibilityModal = () => {
         setShowModal(false);
         setSelectedRecap(null);
@@ -88,36 +85,37 @@ function MyRecaps(props) {
                            updatingRecapId={updatingRecapId} onUpdateVisibility={openVisibilityModal}/>
                 : <p>You haven't any recap yet.</p>
             }
-            <Modal show={showModal} onHide={closeVisibilityModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Change visibility</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                    {selectedRecap && (
-                        <>
-                            <p>
-                                Do you want to make <strong>{selectedRecap.title}</strong>{" "}
-                                {selectedRecap.visibility === "private" ? "public" : "private"}?
-                            </p>
-                        </>
-                    )}
-                </Modal.Body>
-
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={closeVisibilityModal}>
-                        Cancel
-                    </Button>
-                    <Button
-                        variant={selectedRecap?.visibility === "private" ? "success" : "warning"}
-                        onClick={updateVisibility}
-                        disabled={updatingRecapId !== null}
-                    >Confirm</Button>
-                </Modal.Footer>
-            </Modal>
+            <VisibilityModal show={showModal} recap={selectedRecap} isUpdating={updatingRecapId !== null}
+                             onConfirm={updateVisibility} onClose={closeVisibilityModal}>
+            </VisibilityModal>
 
         </Container>
     );
 }
 
+function VisibilityModal(props){
+    if (!props.recap) return null;
+    return (
+        <Modal show={props.show} onHide={props.onClose} centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Change visibility</Modal.Title>
+            </Modal.Header>
+
+            <Modal.Body>
+                <p>
+                    Do you want to make <strong>{props.recap.title}</strong>{" "}
+                    {props.recap.visibility === "private" ? "public" : "private"}?
+                </p>
+            </Modal.Body>
+
+            <Modal.Footer>
+                <Button variant="secondary" onClick={props.onClose}>Cancel</Button>
+                <Button
+                    variant={props.recap.visibility === "private" ? "success" : "warning"}
+                    onClick={props.onConfirm} disabled={props.isUpdating}
+                >Confirm</Button>
+            </Modal.Footer>
+        </Modal>
+    );
+}
 export default MyRecaps;

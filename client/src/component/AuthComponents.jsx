@@ -35,7 +35,7 @@ function LoginForm(props) {
                         </Form.Group>
                         {state.error && <p className="text-danger">{state.error}</p>}
                         <Button type='submit' disabled={isPending}>Login</Button>
-                        <Link className='btn btn-danger mx-2 my-2' to={'/'} disabled={isPending}>Cancel</Link>
+                        <Button as={Link} variant="secondary" className='mx-2 my-2' to={'/'} disabled={isPending}>Cancel</Button>
                     </Form>
                 </Col>
             </Row>
