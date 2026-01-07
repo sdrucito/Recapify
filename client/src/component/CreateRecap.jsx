@@ -43,6 +43,7 @@ function CreateRecap() {
         navigate('/myrecaps/create/editor', {
             state: {
                 sourceType,
+                themeId: selectedTheme,
                 source: item
             }
         });

@@ -8,7 +8,7 @@ function RecapEditor() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const { sourceType, source } = location.state || {}; //Note: source contains only recap preview, not full recap.
+    const { sourceType, themeId, source } = location.state || {}; //Note: source contains only recap preview, not full recap.
     const [title, setTitle] = useState("Untitled recap");
     const [pages, setPages] = useState([ //TODO: add slots
         { id: 1, backgroundId: null },
@@ -17,9 +17,9 @@ function RecapEditor() {
     ]);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const [backgrounds, setBackgrounds] = useState([]);
-    const [isDirty, setIsDirty] = useState(false);
+    const [isDirty, setIsDirty] = useState(false);  //to prevent exit with unsaved change
 
-    // take information from CreateRecap
+    /** take information from CreateRecap **/
     useEffect(() => {
         if (!source)
             navigate('/myrecaps/create');
@@ -52,11 +52,12 @@ function RecapEditor() {
             loadSourceRecap();
     }, [source, navigate]);
 
+
     useEffect(() => {
         if (!source) return;
         const loadBackgrounds = async () => {
             try {
-                const bgs = await API.getBackgroundsByTheme(source.theme_id); // TODO: themeId dinamico
+                const bgs = await API.getBackgroundsByTheme(themeId);
                 setBackgrounds(
                     bgs.map(bg => ({
                         id: bg.id,
@@ -71,7 +72,6 @@ function RecapEditor() {
         };
         loadBackgrounds();
     }, [source]);
-
     const assignBackground = (bgId) => {
         const bg = backgrounds.find(b => b.id === bgId);
         if (!bg) return;
@@ -79,7 +79,6 @@ function RecapEditor() {
         setPages(old =>
             old.map((p, i) => {
                 if (i !== currentPageIndex) return p;
-
                 const slotCount = bg.layout.length;
 
                 const newTexts = [];
@@ -221,6 +220,7 @@ function RecapEditor() {
                                     } : p
                             )
                         );
+                        setIsDirty(true);
                     }}
                 />
 
@@ -275,11 +275,11 @@ function PagesSidebar(props) {
         </div>
     );
 }
-function PagePreview({ page, onUpdateText }) {
-    if (!page || !page.backgroundImagePath) {
+function PagePreview(props) {
+    if (!props.page || !props.page.backgroundImagePath) {
         return (
-            <div className="flex-fill border rounded me-3 d-flex align-items-center justify-content-center text-muted">
-                Select a background
+            <div className={`flex-fill rounded me-3 d-flex justify-content-center align-items-center
+                ${props.page?.backgroundImagePath ? "" : "border"}`} >Select a background{/*TODO: rimuovere il bordo bianco?*/}
             </div>
         );
     }
@@ -290,17 +290,17 @@ function PagePreview({ page, onUpdateText }) {
             style={{ height: "70vh" }}
         >
             <div style={{ position: "relative" }}>
-                <img src={`${SERVER_URL}/images/${page.backgroundImagePath}`} alt=""
+                <img src={`${SERVER_URL}/images/${props.page.backgroundImagePath}`} alt=""
                     style={{maxHeight: "70vh", maxWidth: "100%", display: "block"}}
                 />
 
-                {page.texts.map(t => {
-                    const pos = getSlotPosition(page, t.slotIndex); // {x,y} in %
+                {props.page.texts.map(t => {
+                    const pos = getSlotPosition(props.page, t.slotIndex); // {x,y} in %
                     return (
                         <textarea
                             key={t.slotIndex}
                             value={t.content}
-                            onChange={e => onUpdateText(t.slotIndex, e.target.value)}
+                            onChange={e => props.onUpdateText(t.slotIndex, e.target.value)}
                             placeholder={`Text ${t.slotIndex + 1}`}
                             style={{
                                 position: "absolute",

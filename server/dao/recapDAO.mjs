@@ -259,7 +259,12 @@ export const getBackgroundsByTheme = (themeId) => {
                             FROM backgrounds WHERE theme_id = ?`;
         db.all(sql, [themeId], (err, rows) => {
             if (err) reject(err);
-            else resolve(rows);
+            else resolve(
+                rows.map(r => ({
+                    id: r.id,
+                    image_path: r.image_path,
+                    layout: JSON.parse(r.layout_json)
+                })));
         });
     });
 };
