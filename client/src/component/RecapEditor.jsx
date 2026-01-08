@@ -3,7 +3,7 @@ import {Button, Container} from "react-bootstrap";
 import API from "../API.mjs";
 import {SERVER_URL} from "../config.js";
 import {useLocation, useNavigate} from "react-router";
-import { useUnsavedChanges} from "./UnsavedChangesContext.jsx";
+import {useUnsavedChanges} from "./UnsavedChangesContext.jsx";
 
 function RecapEditor() {
     const location = useLocation();
@@ -31,17 +31,25 @@ function RecapEditor() {
                 const fullRecap = await API.getRecap(source.id);
                 setTitle(fullRecap.title);
                 setPages(
-                    fullRecap.pages.map(p => ({
-                        id: p.id,
-                        pageIndex: p.page_index,
-                        backgroundId: p.background.id,
-                        backgroundImagePath: p.background.imagePath,
-                        layout: p.background.layout.slots,
-                        texts: p.texts.map(t => ({
-                            slotIndex: t.slotIndex,
-                            content: t.content
-                        }))
-                    }))
+                    fullRecap.pages.map(p => {
+                        const slotCount = p.background.layout.slots.length;
+
+                        const texts = Array.from({ length: slotCount }, (_, i) => {
+                            const existing = p.texts.find(t => t.slotIndex === i);
+                            return existing
+                                ? { slotIndex: i, content: existing.content }
+                                : { slotIndex: i, content: "" };
+                        });
+
+                        return {
+                            id: p.id,
+                            pageIndex: p.page_index,
+                            backgroundId: p.background.id,
+                            backgroundImagePath: p.background.imagePath,
+                            layout: p.background.layout.slots,
+                            texts
+                        };
+                    })
                 );
             } catch (err) {
                 console.error(err);
@@ -53,7 +61,7 @@ function RecapEditor() {
             loadSourceRecap();
     }, [source, navigate]);
 
-
+    /** load and assign background logic **/
     useEffect(() => {
         if (!source) return;
         const loadBackgrounds = async () => {
@@ -103,11 +111,11 @@ function RecapEditor() {
         setHasUnsavedChanges(true);
     };
 
+    /** left sidebar controls **/
     const addPage = () => {
         setPages(p => [...p, { id: Date.now(), backgroundId: null }]);
         setHasUnsavedChanges(true);
     };
-
     const removePage = () => {
         if (pages.length <= 3) return;
         setPages(p => p.filter((_, i) => i !== currentPageIndex));
@@ -126,7 +134,6 @@ function RecapEditor() {
         setCurrentPageIndex(i => i - 1);
         setHasUnsavedChanges(true);
     };
-
     const movePageDown = () => {
         if (currentPageIndex === pages.length - 1) return;
 
@@ -139,37 +146,50 @@ function RecapEditor() {
         setCurrentPageIndex(i => i + 1);
         setHasUnsavedChanges(true);
     };
+
+    /** Recap saving **/
     const isValidRecap = () => {
         if (!title.trim()) return false;
 
-        const hasAtLeastOneText = pages.some(p =>
-            p.texts?.some(t => t.content && t.content.trim() !== "")
-        );
-
-        return hasAtLeastOneText;
+        return pages.every(p => {
+            if (!p.backgroundId) return false;
+            return p.texts?.some(t => t.content?.trim());
+        });
     };
     const handleSave = async () => {
         const payload = {
             title,
-            theme_id: source.theme_id,
+            theme_id: themeId,
             visibility: "private",
             derived_from_recap_id:
                 sourceType === "recap" ? source.id : null,
             pages: pages.map((p, index) => ({
                 page_index: index,
                 background_id: p.backgroundId,
-                texts: p.texts.filter(t => t.content.trim() !== "")
+                texts: p.texts
+                    .filter(t => t.content.trim() !== "")
+                    .map(t => ({
+                        slot_index: t.slotIndex,
+                        content: t.content
+                    }))
             }))
         };
         console.log("Saving recap payload:", payload);
         if (!isValidRecap()) {
-            alert("Please add a title and at least one text per page"); //TODO da testare la validazione
+            alert("Please add a title and at least one text per page");
             return;
         }
         try {
             const result = await API.createRecap(payload);
             setHasUnsavedChanges(false);
-            navigate(`/recaps/${result.id}`);
+            navigate(`/recaps/${result.id}`, {
+                state: {
+                    alertMessage: {
+                        msg: "Recap created as private. You can make it public from My Recaps.",
+                        type: "warning"
+                    }
+                }
+            });
         } catch (err) {
             console.error(err);
             alert("Error while saving recap");
@@ -182,22 +202,14 @@ function RecapEditor() {
     return (
         <Container fluid>
             <EditorHeader
-                title={title}
-                onTitleChange={(v) => { setTitle(v); setHasUnsavedChanges(true); }}
-                onSave={() => console.log("save", pages)}
-                onBack={handleBack}
+                title={title} onTitleChange={(v) => { setTitle(v); setHasUnsavedChanges(true); }}
+                onSave={handleSave} onBack={handleBack}
             />
-            {/*onSave={handleSave}*/}
 
             <div className="d-flex gap-3">
                 <PagesSidebar
-                    pages={pages}
-                    currentIndex={currentPageIndex}
-                    onSelect={setCurrentPageIndex}
-                    onAdd={addPage}
-                    onRemove={removePage}
-                    onMoveUp={movePageUp}
-                    onMoveDown={movePageDown}
+                    pages={pages} currentIndex={currentPageIndex} onSelect={setCurrentPageIndex}
+                    onAdd={addPage} onRemove={removePage} onMoveUp={movePageUp} onMoveDown={movePageDown}
                 />
 
                 <PagePreview
@@ -206,23 +218,21 @@ function RecapEditor() {
                         setPages(old =>
                             old.map((p, i) =>
                                 i === currentPageIndex ? {
-                                        ...p,
-                                        texts: p.texts.map(t =>
-                                            t.slotIndex === slotIndex
-                                                ? { ...t, content: value }
-                                                : t
-                                        )
-                                    } : p
+                                    ...p,
+                                    texts: p.texts.map(t =>
+                                        t.slotIndex === slotIndex
+                                            ? {...t, content: value}
+                                            : t
+                                    )
+                                } : p
                             )
                         );
                         setHasUnsavedChanges(true);
                     }}
                 />
 
-
                 <BackgroundSidebar
-                    backgrounds={backgrounds}
-                    selectedBgId={pages[currentPageIndex]?.backgroundId}
+                    backgrounds={backgrounds} selectedBgId={pages[currentPageIndex]?.backgroundId}
                     onSelect={assignBackground}
                 />
             </div>
@@ -234,8 +244,7 @@ function EditorHeader(props) {
     return (
         <div className="d-flex align-items-center gap-3 mb-3">
             <input
-                className="form-control"
-                value={props.title}
+                className="form-control" value={props.title}
                 onChange={e => props.onTitleChange(e.target.value)}
             />
             <Button variant="secondary" onClick={props.onBack}>Back</Button>
@@ -298,20 +307,13 @@ function PagePreview(props) {
                             onChange={e => props.onUpdateText(t.slotIndex, e.target.value)}
                             placeholder={`Text ${t.slotIndex + 1}`}
                             style={{
-                                position: "absolute",
-                                top: `${pos.y}%`,
-                                left: `${pos.x}%`,
+                                position: "absolute", top: `${pos.y}%`, left: `${pos.x}%`,
                                 transform: "translate(-50%, -50%)",
-                                width: "220px",
-                                resize: "none",
-                                color: "#000",
-                                background: "rgba(255,255,255,0.85)",
-                                borderRadius: "6px",
-                                border: "1px solid #ccc",
-                                padding: "6px",
+                                width: "220px", resize: "none",
+                                color: "#000", background: "rgba(255,255,255,0.85)",
+                                borderRadius: "6px", border: "1px solid #ccc", padding: "6px",
                                 fontSize: "clamp(1rem, 1.3vw, 1.3rem)",
-                                maxWidth: "35%",
-                                minWidth: "180px"
+                                maxWidth: "35%", minWidth: "180px"
                             }}
                         />
                     );

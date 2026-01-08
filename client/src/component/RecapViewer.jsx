@@ -1,12 +1,14 @@
-import {useParams} from "react-router";
+import {useLocation, useParams} from "react-router";
 import {useEffect, useState} from "react";
-import {Container, Carousel} from "react-bootstrap";
+import {Container, Carousel, Alert} from "react-bootstrap";
 import API from "../API.mjs";
 import {SERVER_URL} from "../config.js";
 
 function RecapViewer() {
     const {id} = useParams();
     const [recap, setRecap] = useState(null);
+    const location = useLocation();
+    const alertMessage = location.state?.alertMessage;
 
     useEffect(() => {
         const loadRecap = async () => {
@@ -36,6 +38,8 @@ function RecapViewer() {
             {!recap && <p>Loading recap...</p>}
             {recap && (
                 <>
+                    {alertMessage && (<Alert variant={alertMessage.type} dismissible>{alertMessage.msg}</Alert>)}
+
                     <h2>{recap.title}</h2>
                     <p className="recap-subtle">di {recap.authorUsername} - {recap.createdAt.format("DD MMM YYYY")} - {recap.derived_from_recap_id}</p>
                     <RecapCarousel pagesWithLayout={pagesWithLayout}></RecapCarousel>
