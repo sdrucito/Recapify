@@ -351,7 +351,7 @@ function getSlotPosition(page, slotIndex) {
 
 function BackgroundSidebar(props) {
     return (
-        <div style={{width: "220px",maxHeight: "75vh", overflowY: "auto"}}>
+        <div style={{width: "200px",maxHeight: "75vh", minWidth: "200px", overflowY: "auto"}}>
             <h6>Backgrounds</h6>
             {props.backgrounds.map(bg => (
                 <div key={bg.id}

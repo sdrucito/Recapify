@@ -106,8 +106,8 @@ function PageSlide (props){
                             style={{
                                 position: "absolute", top: t.position.top, left: t.position.left,
                                 transform: "translate(-50%, -50%)", color: "white",
-                                fontSize: "clamp(1rem, 1.3vw, 1.3rem)", maxWidth: "35%", minWidth: "180px",
-                                textAlign: "center", textShadow: "0 0 6px rgba(0,0,0,0.9)"}}
+                                fontSize: "clamp(1.2rem, 1.3vw, 3rem)", maxWidth: "35%", minWidth: "180px",
+                                textAlign: "center", textShadow: "0 0 2px rgba(0,0,0,1)"}}
                         >{t.content}</div>
                     )
                 ))}
