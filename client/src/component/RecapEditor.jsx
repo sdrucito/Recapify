@@ -19,6 +19,7 @@ function RecapEditor() {
     ]);
     const [currentPageIndex, setCurrentPageIndex] = useState(0);
     const [backgrounds, setBackgrounds] = useState([]);
+    const [visibility, setVisibility] = useState("private");
 
     /** take information from CreateRecap **/
     useEffect(() => {
@@ -148,6 +149,10 @@ function RecapEditor() {
     };
 
     /** Recap saving **/
+    const handleVisibility = () => {
+        setVisibility(v => v === "private" ? "public" : "private");
+        setHasUnsavedChanges(true);
+    }
     const isValidRecap = () => {
         if (!title.trim()) return false;
 
@@ -160,7 +165,7 @@ function RecapEditor() {
         const payload = {
             title,
             theme_id: themeId,
-            visibility: "private",
+            visibility: visibility,
             derived_from_recap_id:
                 sourceType === "recap" ? source.id : null,
             pages: pages.map((p, index) => ({
@@ -182,14 +187,7 @@ function RecapEditor() {
         try {
             const result = await API.createRecap(payload);
             setHasUnsavedChanges(false);
-            navigate(`/recaps/${result.id}`, {
-                state: {
-                    alertMessage: {
-                        msg: "Recap created as private. You can make it public from My Recaps.",
-                        type: "warning"
-                    }
-                }
-            });
+            navigate(`/recaps/${result.id}`);
         } catch (err) {
             console.error(err);
             alert("Error while saving recap");
@@ -207,11 +205,16 @@ function RecapEditor() {
             />
 
             <div className="d-flex gap-3">
-                <PagesSidebar
-                    pages={pages} currentIndex={currentPageIndex} onSelect={setCurrentPageIndex}
-                    onAdd={addPage} onRemove={removePage} onMoveUp={movePageUp} onMoveDown={movePageDown}
-                />
-
+                <div>
+                    <VisibilityToggle
+                        visibility={visibility}
+                        onToggle={handleVisibility}
+                    />
+                    <PagesSidebar
+                        pages={pages} currentIndex={currentPageIndex} onSelect={setCurrentPageIndex}
+                        onAdd={addPage} onRemove={removePage} onMoveUp={movePageUp} onMoveDown={movePageDown}
+                    />
+                </div>
                 <PagePreview
                     page={pages[currentPageIndex]}
                     onUpdateText={(slotIndex, value) => {
@@ -252,6 +255,23 @@ function EditorHeader(props) {
         </div>
     );
 }
+function VisibilityToggle({ visibility, onToggle }) {
+    const isPrivate = visibility === "private";
+
+    return (
+        <div className="mb-3">
+            <Button size="sm" variant={isPrivate ? "warning" : "success"} onClick={onToggle}
+            >
+                {isPrivate ? (
+                    <>Private <i className="bi bi-lock-fill" /></>
+                ) : (
+                    <>Public <i className="bi bi-unlock-fill" /></>
+                )}
+            </Button>
+        </div>
+    );
+}
+
 function PagesSidebar(props) {
     return (
         <div style={{ width: "180px" }}>
