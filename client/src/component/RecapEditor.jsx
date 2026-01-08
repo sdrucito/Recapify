@@ -8,7 +8,7 @@ import { useUnsavedChanges} from "./UnsavedChangesContext.jsx";
 function RecapEditor() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { hasUnsavedChanges, setHasUnsavedChanges } = useUnsavedChanges();
+    const { setHasUnsavedChanges, requestNavigation } = useUnsavedChanges();
 
     const { sourceType, themeId, source } = location.state || {}; //Note: source contains only recap preview, not full recap.
     const [title, setTitle] = useState("Untitled recap");
@@ -103,16 +103,6 @@ function RecapEditor() {
         setHasUnsavedChanges(true);
     };
 
-    useEffect(() => {
-        const handler = (e) => {
-            if (!hasUnsavedChanges) return;
-            e.preventDefault();
-            e.returnValue = "";
-        };
-        window.addEventListener("beforeunload", handler);
-        return () => window.removeEventListener("beforeunload", handler);
-    }, [hasUnsavedChanges]);
-
     const addPage = () => {
         setPages(p => [...p, { id: Date.now(), backgroundId: null }]);
         setHasUnsavedChanges(true);
@@ -171,8 +161,9 @@ function RecapEditor() {
                 texts: p.texts.filter(t => t.content.trim() !== "")
             }))
         };
+        console.log("Saving recap payload:", payload);
         if (!isValidRecap()) {
-            alert("Please add a title and at least one text per page");
+            alert("Please add a title and at least one text per page"); //TODO da testare la validazione
             return;
         }
         try {
@@ -185,7 +176,7 @@ function RecapEditor() {
         }
     };
     const handleBack = () => {
-        navigate("/myrecaps/create");
+        requestNavigation(() => navigate("/myrecaps/create"));
     };
 
     return (

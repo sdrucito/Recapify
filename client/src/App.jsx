@@ -14,7 +14,7 @@ import {LoginForm} from "./component/AuthComponents.jsx";
 import MyRecaps from "./component/MyRecaps.jsx";
 import CreateRecap from "./component/CreateRecap.jsx";
 import RecapEditor from "./component/RecapEditor.jsx";
-import UnsavedChangesContext from "./component/UnsavedChangesContext.jsx";
+import { UnsavedChangesProvider} from "./component/UnsavedChangesContext.jsx";
 
 
 function App() {
@@ -55,7 +55,7 @@ function App() {
         setMessage('');
     };
   return (
-      <UnsavedChangesContext.Provider value={{hasUnsavedChanges, setHasUnsavedChanges}}>
+      <UnsavedChangesProvider value={{hasUnsavedChanges, setHasUnsavedChanges}}>
           <Routes>
               <Route element={<DefaultLayout message={message} setMessage={setMessage} loggedIn={loggedIn}
                                              handleLogout={handleLogout}/>}>
@@ -71,7 +71,7 @@ function App() {
                   <Route path="*" element={<NotFound/>}/>
               </Route>
           </Routes>
-      </UnsavedChangesContext.Provider>
+      </UnsavedChangesProvider>
 
   );
 }
