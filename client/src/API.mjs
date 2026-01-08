@@ -31,7 +31,10 @@ const getMyRecapPreviews = async () => {
 
 // GET /api/recaps/:id
 const getRecap = async (id) => {
-    const response = await fetch(`${SERVER_URL}/api/recaps/${id}`);
+    const response = await fetch(
+        `${SERVER_URL}/api/recaps/${id}`,
+        {credentials: "include"}
+    );
     if (response.ok) {
         const r = await response.json();
         return new Recap(
