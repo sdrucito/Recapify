@@ -48,22 +48,22 @@ function RecapViewer() {
             {recap && (
                 <>
                     <h2>{recap.title}</h2>
-                    <p className="recap-subtle">di {recap.authorUsername} - {recap.createdAt.format("DD MMM YYYY")}
+                    <p className="recap-subtle">by {recap.authorUsername} - {recap.createdAt.format("DD MMM YYYY")}
                         {derivedInfo?.exists && (
                             <>
                                 {" – "}
                                 {derivedInfo.accessible ? (
                                     <>
-                                        derivato da{" "}
+                                        remixed from{" "}
                                         <span
                                             className="text-decoration-underline"
                                             style={{cursor: "pointer"}}
                                             onClick={() => navigate(`/recaps/${derivedInfo.id}`)}
                                         >{derivedInfo.title}</span>
-                                        {" "}di {derivedInfo.authorUsername}
+                                        {" "}by {derivedInfo.authorUsername}
                                     </>
                                 ) : (
-                                    <>derivato da un recap privato</>
+                                    <>remixed from a private recap</>
                                 )}
                             </>
                         )}</p>
