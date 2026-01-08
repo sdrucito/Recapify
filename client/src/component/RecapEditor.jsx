@@ -179,7 +179,7 @@ function RecapEditor() {
                     }))
             }))
         };
-        console.log("Saving recap payload:", payload);
+        //console.log("Saving recap payload:", payload);
         if (!isValidRecap()) {
             alert("Please add a title and at least one text per page");
             return;

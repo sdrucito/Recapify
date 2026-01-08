@@ -107,6 +107,48 @@ app.get('/api/recaps/:id', async (request, response) => {
   }
 });
 
+// GET /api/recaps/:id/derived-from
+app.get('/api/recaps/:id/derived-from', async (req, res) => {
+  try {
+    const recap = await getRecap(req.params.id);
+    if (!recap || !recap.derivedFromRecapId)
+      return res.json({ exists: false });
+
+    const original = await getRecap(recap.derivedFromRecapId);
+    if (!original)
+      return res.json({ exists: false });
+
+    if (original.visibility === 'public') {
+      return res.json({
+        exists: true,
+        accessible: true,
+        id: original.id,
+        title: original.title,
+        authorUsername: original.authorUsername
+      });
+    }
+
+    if (req.isAuthenticated() && req.user.id === original.authorId) {
+      return res.json({
+        exists: true,
+        accessible: true,
+        id: original.id,
+        title: original.title,
+        authorUsername: original.authorUsername
+      });
+    }
+
+    return res.json({
+      exists: true,
+      accessible: false
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).end();
+  }
+});
+
 // PATCH /api/recaps/:id/visibility
 app.patch('/api/recaps/:id/visibility', isLoggedIn, async (req, res) => {
   try {

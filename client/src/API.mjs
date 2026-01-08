@@ -54,6 +54,17 @@ const getRecap = async (id) => {
         throw new Error("Failed to fetch recap");
     }
 };
+// GET /api/recaps/:id/derived-from
+async function getDerivedFromInfo(recapId) {
+    const response = await fetch(`${SERVER_URL}/api/recaps/${recapId}/derived-from`, {
+        credentials: 'include'
+    });
+
+    if (!response.ok)
+        throw new Error("Cannot load derived-from info");
+
+    return await response.json();
+}
 
 // PATCH /api/recaps/:id/visibility
 const updateRecapVisibility = async (recapId, visibility) => {
@@ -196,7 +207,7 @@ const logout = async()=>{
     }
 }
 
-const API = {getAllPublicRecapPreviews, getMyRecapPreviews, getRecap, updateRecapVisibility,
-    createRecap, getAllThemes, getTemplatesByTheme, getBackgroundsByTheme, getPublicRecapsByTheme,
-    login, getUserInfo, logout};
+const API = {getAllPublicRecapPreviews, getMyRecapPreviews, getRecap, getDerivedFromInfo,
+    updateRecapVisibility, createRecap, getAllThemes, getTemplatesByTheme, getBackgroundsByTheme,
+    getPublicRecapsByTheme, login, getUserInfo, logout};
 export default API;

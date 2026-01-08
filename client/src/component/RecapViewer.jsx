@@ -1,17 +1,28 @@
-import { useParams} from "react-router";
+import {useNavigate, useParams} from "react-router";
 import {useEffect, useState} from "react";
-import {Container, Carousel, Alert} from "react-bootstrap";
+import {Container, Carousel} from "react-bootstrap";
 import API from "../API.mjs";
 import {SERVER_URL} from "../config.js";
 
 function RecapViewer() {
     const {id} = useParams();
     const [recap, setRecap] = useState(null);
+    const [derivedInfo, setDerivedInfo] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadRecap = async () => {
+            setDerivedInfo(null); //Note: set at null for re-rendering the component
             const r = await API.getRecap(id);
             setRecap(r);
+            if (r.derivedFromRecapId) {
+                try {
+                    const info = await API.getDerivedFromInfo(r.id);
+                    setDerivedInfo(info);
+                } catch {
+                    setDerivedInfo(null);
+                }
+            }
         };
         loadRecap();
     }, [id]);
@@ -37,7 +48,25 @@ function RecapViewer() {
             {recap && (
                 <>
                     <h2>{recap.title}</h2>
-                    <p className="recap-subtle">di {recap.authorUsername} - {recap.createdAt.format("DD MMM YYYY")} - {recap.derived_from_recap_id}</p>
+                    <p className="recap-subtle">di {recap.authorUsername} - {recap.createdAt.format("DD MMM YYYY")}
+                        {derivedInfo?.exists && (
+                            <>
+                                {" – "}
+                                {derivedInfo.accessible ? (
+                                    <>
+                                        derivato da{" "}
+                                        <span
+                                            className="text-decoration-underline"
+                                            style={{cursor: "pointer"}}
+                                            onClick={() => navigate(`/recaps/${derivedInfo.id}`)}
+                                        >{derivedInfo.title}</span>
+                                        {" "}di {derivedInfo.authorUsername}
+                                    </>
+                                ) : (
+                                    <>derivato da un recap privato</>
+                                )}
+                            </>
+                        )}</p>
                     <RecapCarousel pagesWithLayout={pagesWithLayout}></RecapCarousel>
                 </>
             )}
