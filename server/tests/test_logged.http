@@ -91,6 +91,9 @@ Content-Type: application/json
   "pages": []
 }
 ###
+# get derived-info from a recap | return 200
+GET /api/recaps/:id/derived-from
+###
 # Checking if user is still logged-in | return 200(OK)
 GET http://localhost:3001/api/sessions/current
 ###

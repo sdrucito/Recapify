@@ -2,7 +2,7 @@ import {useNavigate, useParams} from "react-router";
 import {useEffect, useState} from "react";
 import {Container, Carousel} from "react-bootstrap";
 import API from "../API.mjs";
-import {SERVER_URL} from "../config.js";
+import {SERVER_URL, TEXT_BOX_MAX_WIDTH, TEXT_BOX_MIN_WIDTH} from "../constants.js";
 
 function RecapViewer() {
     const {id} = useParams();
@@ -95,7 +95,7 @@ function PageSlide (props){
             <div style={{ position: "relative" }}>
                 <img
                     src={`${SERVER_URL}/images/${props.page.background.imagePath}`}
-                    style={{maxHeight: "70vh", maxWidth: "100%", display: "block"}}
+                    style={{height: "70vh", maxWidth: "100%", display: "block", objectFit: "contain"}}
                     alt=""
                 />
 
@@ -106,8 +106,10 @@ function PageSlide (props){
                             style={{
                                 position: "absolute", top: t.position.top, left: t.position.left,
                                 transform: "translate(-50%, -50%)", color: "white",
-                                fontSize: "clamp(1.2rem, 1.3vw, 3rem)", maxWidth: "35%", minWidth: "180px",
-                                textAlign: "center", textShadow: "0 0 2px rgba(0,0,0,1)"}}
+                                fontSize: "clamp(1.2rem, 1.3vw, 3rem)", maxWidth: TEXT_BOX_MAX_WIDTH, minWidth: TEXT_BOX_MIN_WIDTH,
+                                textAlign: "center",
+                                textShadow: "-1px -1px 2px #000, 1px -1px 2px #000,-1px  1px 2px #000,1px  1px 2px #000"
+                            }}
                         >{t.content}</div>
                     )
                 ))}

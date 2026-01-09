@@ -1,5 +1,5 @@
 import {Col, Row} from "react-bootstrap";
-import {SERVER_URL} from "../config.js";
+import {SERVER_URL} from "../constants.js";
 
 function PreviewPicker(props) {
     return (

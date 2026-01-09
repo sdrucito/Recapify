@@ -1,5 +1,5 @@
 import {Recap, RecapPreview} from "./models/recap.mjs";
-import {SERVER_URL} from "./config.js";
+import {SERVER_URL} from "./constants.js";
 
 
 // GET /api/recaps

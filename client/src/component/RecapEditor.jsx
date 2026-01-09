@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {Button, Container} from "react-bootstrap";
 import API from "../API.mjs";
-import {SERVER_URL} from "../config.js";
+import {SERVER_URL, TEXT_BOX_MAX_WIDTH, TEXT_BOX_MIN_WIDTH} from "../constants.js";
 import {useLocation, useNavigate} from "react-router";
 import {useUnsavedChanges} from "./UnsavedChangesContext.jsx";
 
@@ -333,7 +333,7 @@ function PagePreview(props) {
                                 color: "#000", background: "rgba(255,255,255,0.85)",
                                 borderRadius: "6px", border: "1px solid #ccc", padding: "6px",
                                 fontSize: "clamp(1rem, 1.3vw, 1.3rem)",
-                                maxWidth: "35%", minWidth: "180px"
+                                maxWidth: TEXT_BOX_MAX_WIDTH, minWidth: TEXT_BOX_MIN_WIDTH
                             }}
                         />
                     );
