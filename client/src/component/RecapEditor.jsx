@@ -310,12 +310,12 @@ function PagePreview(props) {
 
     return (
         <div
-            className="flex-fill border rounded me-3 d-flex justify-content-center align-items-center"
+            className="flex-fill rounded me-3 d-flex justify-content-center align-items-center"
             style={{ height: "70vh" }}
         >
             <div style={{ position: "relative" }}>
                 <img src={`${SERVER_URL}/images/${props.page.backgroundImagePath}`} alt=""
-                    style={{maxHeight: "70vh", maxWidth: "100%", display: "block"}}
+                    style={{height: "70vh", maxWidth: "100%", display: "block", objectFit: "contain"}}
                 />
 
                 {props.page.texts.map(t => {
