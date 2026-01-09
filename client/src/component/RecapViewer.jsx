@@ -51,7 +51,7 @@ function RecapViewer() {
                     <p className="recap-subtle">by {recap.authorUsername} - {recap.createdAt.format("DD MMM YYYY")}
                         {derivedInfo?.exists && (
                             <>
-                                {" – "}
+                                {" - "}
                                 {derivedInfo.accessible ? (
                                     <>
                                         remixed from{" "}
