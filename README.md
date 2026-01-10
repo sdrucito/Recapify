@@ -264,9 +264,9 @@
 
 ## Users Credentials
 
-| username                   | password      | note                                                                                             |
-|----------------------------|---------------|--------------------------------------------------------------------------------------------------|
-| playerone@gmail.com        | password123   |                                                                                                  |
-| dicemaster@rpgmail.com     | RollTheDice   | this user has a recap from a self-private template                                               |
-| questgiver@fantasyworld.it | M41nQu3st     | this user has a recap derived from a public template and a recap derived from a private template |
-| superwario@bros.jp         | GoombaCupcake | this user doesn't have any recap                                                                 |
+| username                   | password      | note                                                                                                   |
+|----------------------------|---------------|--------------------------------------------------------------------------------------------------------|
+| playerone@gmail.com        | password123   |                                                                                                        |
+| dicemaster@rpgmail.com     | RollTheDice   | this user has a recap from a self-private template                                                     |
+| questgiver@fantasyworld.it | M41nQu3st     | this user has a recap derived from a public recap and a recap derived from a recap switched to private |
+| superwario@bros.jp         | GoombaCupcake | this user doesn't have any recap                                                                       |

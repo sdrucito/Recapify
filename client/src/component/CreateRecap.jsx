@@ -28,7 +28,7 @@ function CreateRecap() {
                 } else {
                     const data = await API.getPublicRecapsByTheme(selectedTheme);
                     setItems(data);
-                    //console.log("CreateRecap loaded data first:", data[0]); //TODO: da togliere
+                    //console.log("CreateRecap loaded data first:", data[0]);
                 }
             } finally {
                 setLoading(false);

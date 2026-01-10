@@ -72,7 +72,7 @@ function MyRecaps(props) {
                 <h4 className="position-absolute start-50 translate-middle-x mb-0 d-none d-md-block">
                     My Recaps
                 </h4>
-                <h4 className="position-absolute start-0 ps-4 mb-0 d-block d-md-none">My Recaps</h4> {/*TODO: da sistemare meglio*/}
+                <h4 className="position-absolute start-0 ps-4 mb-0 d-block d-md-none">My Recaps</h4> {/*TODO: to improve for small screen*/}
                 <div className="d-flex gap-2">
                     <Button as={Link} to="/myrecaps/create" className="btn bg-gradient">Create new recap</Button>
                     <Button className="btn bg-gradient" onClick={toggleSort}>

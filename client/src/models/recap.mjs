@@ -7,7 +7,7 @@ function Theme(id, name, description = null ){
 }
 function Background(id, themeId, imagePath, slots, layoutJson){
     this.id = id;
-    this.themeId = themeId; //TODO forse da cambiare
+    this.themeId = themeId;
     this.imagePath = imagePath;
     this.slots = slots;
     this.layout = typeof layoutJson === "string" ? JSON.parse(layoutJson) : layoutJson;

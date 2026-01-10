@@ -12,7 +12,7 @@ function RecapEditor() {
 
     const { sourceType, themeId, source } = location.state || {}; //Note: source contains only recap preview, not full recap.
     const [title, setTitle] = useState("Untitled recap");
-    const [pages, setPages] = useState([ //TODO: add slots
+    const [pages, setPages] = useState([
         { id: 1, backgroundId: null },
         { id: 2, backgroundId: null },
         { id: 3, backgroundId: null }
@@ -303,7 +303,7 @@ function PagePreview(props) {
     if (!props.page || !props.page.backgroundImagePath) {
         return (
             <div className={`flex-fill rounded me-3 d-flex justify-content-center align-items-center
-                ${props.page?.backgroundImagePath ? "" : "border"}`} >Select a background{/*TODO: rimuovere il bordo bianco?*/}
+                ${props.page?.backgroundImagePath ? "" : "border"}`} >Select a background
             </div>
         );
     }

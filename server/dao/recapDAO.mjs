@@ -63,7 +63,7 @@ export const getAllRecapsByUserId = (userId) => {
                     r.authorId,
                     r.authorUsername,
                     r.visibility,
-                    r.derived_from_recap_id, //TODO da controllare in futuro
+                    r.derived_from_recap_id,
                     r.created_at,
                     false,
                     []
@@ -157,7 +157,7 @@ export const getRecap = (recapId) => {
 // change the visibility of a recap
 export const updateRecapVisibility = (recapId, visibility) => {
     return new Promise((resolve, reject) => {
-        const sql = `UPDATE recaps SET visibility = ? WHERE id = ?`; //TODO: visibility è controllato al livello superiore, ma sarebbe da controllare anche qui
+        const sql = `UPDATE recaps SET visibility = ? WHERE id = ?`; //Note: visibility is already check in API
         db.run(sql, [visibility, recapId], function (err) {
             if (err) {
                 reject(err);

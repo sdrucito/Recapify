@@ -55,7 +55,7 @@ const isLoggedIn = (req, res, next) => {
 }
 
 app.use(session({
-  secret: "shhhhh... it's a secret!", //TODO: soluzione temporanea, sarebbe da non mettere hardcoded così
+  secret: "shhhhh... it's a secret!", //Note: should not be hardcoded like this
   resave: false,
   saveUninitialized: false,
 }));
@@ -63,7 +63,7 @@ app.use(passport.authenticate('session'));
 
 
 /**** STATIC ****/
-app.use('/images', express.static('images')); //TODO soluzione temporanea, sarebbe da creare un'apposita api
+app.use('/images', express.static('images')); //In future this could be an API
 
 /**** ROUTES ****/
 // GET /api/recaps
@@ -92,7 +92,7 @@ app.get('/api/recaps/:id', async (request, response) => {
   try {
     const recap = await getRecap(request.params.id);
     if(recap === null)
-      return response.status(404).json(recap); //TODO: check if is ok json null
+      return response.status(404).json(recap);
 
     if (recap.visibility === 'public')
       return response.json(recap);

@@ -193,7 +193,7 @@ const getUserInfo = async () => {
     if(response.ok) {
         return user;
     }else{
-        throw user; //TODO da controllare questo errore
+        throw user;
     }
 }
 
