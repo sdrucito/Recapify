@@ -6,7 +6,7 @@ import API from "../API.mjs";
 
 function RecapHomePage(){
     const [recapPreviews, setRecapPreviews] = useState([]);
-    const [sortMode, setSortMode] = useState("none");
+    const [sortMode, setSortMode] = useState("desc");
     useEffect(() => {
         const getRecapPreviews = async () => {
             const recapPreviews = await API.getAllPublicRecapPreviews();
