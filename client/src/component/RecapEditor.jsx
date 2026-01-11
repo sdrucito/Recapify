@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {Button, Container} from "react-bootstrap";
 import API from "../API.mjs";
-import {SERVER_URL, TEXT_BOX_MAX_WIDTH, TEXT_BOX_MIN_WIDTH} from "../constants.js";
+import {SERVER_URL, TEXT_BOX_MAX_WIDTH, TEXT_BOX_MIN_WIDTH, MIN_PAGES, MAX_PAGES, MAX_TEXT_LENGTH} from "../constants.js";
 import {useLocation, useNavigate} from "react-router";
 import {useUnsavedChanges} from "./UnsavedChangesContext.jsx";
 
@@ -114,11 +114,12 @@ function RecapEditor() {
 
     /** left sidebar controls **/
     const addPage = () => {
+        if (pages.length >= MAX_PAGES) return;
         setPages(p => [...p, { id: Date.now(), backgroundId: null }]);
         setHasUnsavedChanges(true);
     };
     const removePage = () => {
-        if (pages.length <= 3) return;
+        if (pages.length <= MIN_PAGES) return;
         setPages(p => p.filter((_, i) => i !== currentPageIndex));
         setCurrentPageIndex(0);
         setHasUnsavedChanges(true);
@@ -285,8 +286,8 @@ function PagesSidebar(props) {
             ))}
 
             <div className="d-flex gap-2 mt-2">
-                <Button size="sm" onClick={props.onAdd}>+</Button>
-                <Button size="sm" variant="danger" disabled={props.pages.length <= 3}
+                <Button size="sm" disabled={props.pages.length >= MAX_PAGES} onClick={props.onAdd}>+</Button>
+                <Button size="sm" variant="danger" disabled={props.pages.length <= MIN_PAGES}
                         onClick={props.onRemove}>−</Button>
             </div>
             <div className="d-flex gap-2 mt-2">
@@ -324,6 +325,7 @@ function PagePreview(props) {
                         <textarea
                             key={t.slotIndex}
                             value={t.content}
+                            maxLength={MAX_TEXT_LENGTH}
                             onChange={e => props.onUpdateText(t.slotIndex, e.target.value)}
                             placeholder={`Text ${t.slotIndex + 1}`}
                             style={{
