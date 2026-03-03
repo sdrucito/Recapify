@@ -1,6 +1,16 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/VzyEqkSI)
+# Disclaimer
+
+This project was developed as part of the Web Applications course at the Polytechnic University of Turin.
+
+It is intended for academic and demonstrative purposes only and showcases a full-stack Single Page Application built with React (frontend) and Node.js/Express with SQLite (backend).
+
+All images included in the application are publicly available resources used for educational purposes only. No copyright ownership is claimed. If any material infringes copyright, please contact me and it will be removed.
+
+The code is provided as-is and is not intended for production environments.
+
+
 # Exam #4: "Il mio anno in..."
-## Student: s329518 CIMMINO SALVATORE 
+## Student: REDACTED
 
 ## React Client Application Routes
 
